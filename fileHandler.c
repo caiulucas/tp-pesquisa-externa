@@ -2,17 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
-#define DATA2SIZE 10
-#define DATA3SIZE 50
-
-typedef struct
-{
-  int key;
-  long int data1;
-  char data2[DATA2SIZE];
-  char data3[DATA3SIZE];
-} Data;
+#include "fileHandler.h"
+#include "sizes.h"
 
 void generateRandomData(Data *data, int key)
 {
