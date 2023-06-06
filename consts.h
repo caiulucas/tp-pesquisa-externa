@@ -3,6 +3,8 @@
 #define DATA3_SIZE 50
 #define PAGE_ITEMS 4
 #define INDEXES_MAX 100
+#define DATA_FILE "data/data.bin"
+#define INDEXES_FILE "data/indexes.bin"
 
 typedef struct
 {

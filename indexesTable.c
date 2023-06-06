@@ -1,9 +1,9 @@
 #include <stdio.h>
-#include "sizes.h"
+#include "indexesTable.h"
 
-int readIndexesTable(Index **indexes)
+int readIndexesTable(Index *indexes)
 {
-  FILE *file = fopen("indexes.bin", "rb");
+  FILE *file = fopen(INDEXES_FILE, "rb");
 
   if (file == NULL)
   {
@@ -24,7 +24,7 @@ int readIndexesTable(Index **indexes)
 
 int createIndexesTable(Index *indexes, FILE *dataFile)
 {
-  FILE *file = fopen("indexes.bin", "wb");
+  FILE *file = fopen(INDEXES_FILE, "wb");
 
   if (file == NULL)
   {
@@ -36,8 +36,6 @@ int createIndexesTable(Index *indexes, FILE *dataFile)
 
   int count = 0;
   int pos = 0;
-
-  fseek(dataFile, 0, SEEK_SET);
 
   printf("Criando tabela de índices...\n");
   while (fread(&item, sizeof(Data), 1, dataFile) == 1)
@@ -58,6 +56,7 @@ int createIndexesTable(Index *indexes, FILE *dataFile)
 
   printf("Tabela de índices criada com sucesso!\n");
   fclose(file);
+  fseek(dataFile, 0, SEEK_SET);
 
   return pos;
 }

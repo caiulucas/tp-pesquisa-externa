@@ -3,7 +3,6 @@
 #include <string.h>
 #include <time.h>
 #include "fileHandler.h"
-#include "sizes.h"
 
 void generateRandomData(Data *data, int key)
 {
@@ -54,10 +53,12 @@ void generateBinaryFile(const char *filename, int numRecords)
 
 void printBinaryFile(FILE *file)
 {
-  while(!feof(file)) {
-    Data data; 
+  while (!feof(file))
+  {
+    Data data;
     fread(&data, sizeof(Data), 1, file);
 
     printf("key: %d - data1: %ld - data2: %s - data3: %s\n", data.key, data.data1, data.data2, data.data3);
   }
+  fseek(file, 0, SEEK_SET);
 }

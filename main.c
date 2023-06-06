@@ -3,11 +3,11 @@
 #include "fileHandler.h"
 #include "indexed.h"
 #include "indexesTable.h"
-#include "sizes.h"
+#include "consts.h"
 
 int main()
 {
-  FILE *file = fopen("data.bin", "rb");
+  FILE *file = fopen(DATA_FILE, "rb");
 
   if (file == NULL)
   {
@@ -16,8 +16,6 @@ int main()
   }
 
   printBinaryFile(file);
-  fseek(file, 0, SEEK_SET);
-
   printf("-------------------------\n");
 
   Index *indexes = malloc(sizeof(Index) * INDEXES_MAX);
