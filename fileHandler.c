@@ -13,14 +13,14 @@ void generateRandomData(Data *data, int key)
   data->data1 = rand();
 
   // Generate random values for data2
-  for (int i = 0; i < DATA2SIZE; i++)
+  for (int i = 0; i < DATA2_SIZE; i++)
   {
     data->data2[i] = 'A' + rand() % 26;
   }
   data->data2[9] = '\0';
 
   // Generate random values for data3
-  for (int i = 0; i < DATA3SIZE; i++)
+  for (int i = 0; i < DATA3_SIZE; i++)
   {
     data->data3[i] = 'a' + rand() % 26;
   }
@@ -52,15 +52,8 @@ void generateBinaryFile(const char *filename, int numRecords)
   printf("Binary file '%s' created successfully.\n", filename);
 }
 
-void printBinaryFile(const char *filename)
+void printBinaryFile(FILE *file)
 {
-  FILE *file = fopen(filename, "rb");
-  if (file == NULL)
-  {
-    printf("Unable to open the file.\n");
-    return;
-  }
-  
   while(!feof(file)) {
     Data data; 
     fread(&data, sizeof(Data), 1, file);
