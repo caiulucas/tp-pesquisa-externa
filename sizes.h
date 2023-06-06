@@ -1,14 +1,14 @@
 #pragma once
-#define DATA2SIZE 10
-#define DATA3SIZE 50
-#define ITENSPAGINA 4
-#define MAXTABELA 100
+#define DATA2_SIZE 10
+#define DATA3_SIZE 50
+#define PAGE_ITEMS 4
+#define INDEXES_MAX 100
 
 typedef struct
 {
   int key;
   long int data1;
-  char data2[DATA2SIZE];
-  char data3[DATA3SIZE];
+  char data2[DATA2_SIZE];
+  char data3[DATA3_SIZE];
 } Data;
 
