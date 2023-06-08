@@ -11,8 +11,8 @@ int main()
 
   if (file == NULL)
   {
-    printf("Erro ao abrir o arquivo\n");
-    return 1;
+    printf("[-] Erro ao abrir o arquivo\n");
+    file = generateBinaryFile(200);
   }
 
   printBinaryFile(file);
@@ -21,9 +21,9 @@ int main()
   Index *indexes = malloc(sizeof(Index) * INDEXES_MAX);
 
   int pos = readIndexesTable(indexes);
-  if (pos == -1) 
+  if (pos == -1)
     pos = createIndexesTable(indexes, file);
-  
+
   Data item;
   fflush(stdout);
   printf("Digite a chave do item que deseja buscar: ");

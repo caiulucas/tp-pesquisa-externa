@@ -7,8 +7,6 @@
 void generateRandomData(Data *data, int key)
 {
   data->key = key;
-
-  // Generate random values for data1
   data->data1 = rand();
 
   // Generate random values for data2
@@ -26,38 +24,37 @@ void generateRandomData(Data *data, int key)
   data->data3[49] = '\0';
 }
 
-void generateBinaryFile(const char *filename, int numRecords)
+FILE *generateBinaryFile(int numRecords)
 {
   Data data;
-  FILE *file = fopen(filename, "wb");
+  FILE *file = fopen(DATA_FILE, "wb");
+
   if (file == NULL)
   {
-    printf("Unable to open the file.\n");
-    return;
+    printf("[-] Não foi possível abrir o arquivo.\n");
+    return NULL;
   }
 
   srand(time(NULL));
 
   for (int i = 0; i < numRecords; i++)
   {
-    printf("Generating data for record %d...\n", i + 1);
+    printf("[+] Gerando %d dados...\n", i + 1);
 
     generateRandomData(&data, i);
     fwrite(&data, sizeof(Data), 1, file);
   }
 
-  fclose(file);
-
-  printf("Binary file '%s' created successfully.\n", filename);
+  printf("[+] Arquivo de dados criado com sucesso!\n");
+  fseek(file, 0, SEEK_SET);
+  return file;
 }
 
 void printBinaryFile(FILE *file)
 {
-  while (!feof(file))
+  Data data;
+  while (fread(&data, sizeof(Data), 1, file))
   {
-    Data data;
-    fread(&data, sizeof(Data), 1, file);
-
     printf("key: %d - data1: %ld - data2: %s - data3: %s\n", data.key, data.data1, data.data2, data.data3);
   }
   fseek(file, 0, SEEK_SET);
