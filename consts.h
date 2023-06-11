@@ -14,8 +14,8 @@ typedef struct
   char data3[DATA3_SIZE];
 } Data;
 
-
-typedef struct {
-    int pos;
-    int key;
+typedef struct
+{
+  int pos;
+  int key;
 } Index;

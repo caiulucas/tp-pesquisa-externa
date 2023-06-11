@@ -24,14 +24,14 @@ void generateRandomData(Data *data, int key)
   data->data3[49] = '\0';
 }
 
-FILE *generateBinaryFile(int numRecords)
+void generateBinaryFile(int numRecords)
 {
   Data data;
   FILE *file = fopen(DATA_FILE, "wb");
 
   if (file == NULL)
   {
-    printf("[-] Não foi possível abrir o arquivo.\n");
+    printf("[-] Não foi possível abrir o arquivo de dados.\n");
     return NULL;
   }
 
@@ -46,8 +46,7 @@ FILE *generateBinaryFile(int numRecords)
   }
 
   printf("[+] Arquivo de dados criado com sucesso!\n");
-  fseek(file, 0, SEEK_SET);
-  return file;
+  fclose(file);
 }
 
 void printBinaryFile(FILE *file)

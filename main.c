@@ -9,10 +9,16 @@ int main()
 {
   FILE *file = fopen(DATA_FILE, "rb");
 
-  if (file == NULL)
+  if (!file)
   {
-    printf("[-] Erro ao abrir o arquivo\n");
-    file = generateBinaryFile(200);
+    printf("[-] Arquivo de dados não encontrado.\n");
+    generateBinaryFile(200);
+    file = fopen(DATA_FILE, "rb");
+  }
+
+  if(!file) {
+    printf("[-] Erro ao abrir o arquivo de dados.");
+    return EXIT_FAILURE;
   }
 
   printBinaryFile(file);
@@ -29,6 +35,7 @@ int main()
   printf("Digite a chave do item que deseja buscar: ");
   scanf("%d", &item.key);
 
+ 
   if (search(indexes, pos, &item, file))
   {
     printf("Item encontrado: %d %ld\n", item.key, item.data1);
@@ -39,6 +46,7 @@ int main()
   }
 
   fclose(file);
+  free(indexes);
 
-  return 0;
+  return EXIT_SUCCESS;
 }

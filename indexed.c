@@ -12,7 +12,7 @@ bool search(Index indexes[], int size, Data *item, FILE *file)
   while (i < size && indexes[i].key <= item->key)
     i++;
 
-  // Caso a chave desejada seja menor que a chave, o item não existe
+  // Caso a chave desejada seja menor que a primeira chave, o item não existe
   if (i == 0)
     return false;
 
