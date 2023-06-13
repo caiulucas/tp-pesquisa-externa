@@ -41,7 +41,7 @@ int createIndexesTable(Index *indexes, FILE *dataFile)
   while (fread(&item, sizeof(Data), 1, dataFile) == 1)
   {
     count++;
-    if (count % PAGE_ITEMS == 1)//sugerir mudar o resto para 3
+    if (count % PAGE_ITEMS == 1) // sugerir mudar o resto para 3
     {
       indexes[pos].key = item.key;
       indexes[pos].pos = pos + 1;
@@ -55,7 +55,7 @@ int createIndexesTable(Index *indexes, FILE *dataFile)
   }
 
   printf("Tabela de índices criada com sucesso!\n");
-  //fclose(file);
+  // fclose(file);
   fseek(dataFile, 0, SEEK_SET);
 
   return pos;
