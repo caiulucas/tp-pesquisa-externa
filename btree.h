@@ -13,4 +13,4 @@ typedef struct PageType {
 
 void Inicializa (pointerType Arvore);
 
-void Pesquisa (Data *x, pointerType Ap);
+void Pesquisa (Data *x, pointerType Ap);//teste
