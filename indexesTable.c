@@ -55,7 +55,6 @@ int createIndexesTable(Index *indexes, FILE *dataFile)
   }
 
   printf("Tabela de índices criada com sucesso!\n");
-  // fclose(file);
   fseek(dataFile, 0, SEEK_SET);
 
   return pos;

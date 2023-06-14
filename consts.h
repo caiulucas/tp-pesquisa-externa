@@ -5,6 +5,8 @@
 #define INDEXES_MAX 100
 #define DATA_FILE "data/data.bin"
 #define INDEXES_FILE "data/indexes.bin"
+#define M 2
+#define MM 4
 
 typedef struct
 {

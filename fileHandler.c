@@ -32,7 +32,7 @@ void generateBinaryFile(int numRecords)
   if (file == NULL)
   {
     printf("[-] Não foi possível abrir o arquivo de dados.\n");
-    return NULL;
+    return;
   }
 
   srand(time(NULL));
