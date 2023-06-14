@@ -16,22 +16,21 @@ bool search(Index indexes[], int size, Data *item, FILE *file)
   if (i == 0)
     return false;
 
-  int itemsLength = PAGE_ITEMS;
-
+  int pageLength = PAGE_ITEMS;
   // A última página não deve ser completa
-  if (i > size)
+  if (i == size) //qual a necessidade?
   {
     fseek(file, 0, SEEK_END);
-    itemsLength = (ftell(file) / sizeof(Data)) % PAGE_ITEMS;
+    pageLength = (ftell(file) / sizeof(Data)) % PAGE_ITEMS;
   }
 
   // Lê a página do arquivo
   int displacement = (indexes[i - 1].pos - 1) * PAGE_ITEMS * sizeof(Data);
   fseek(file, displacement, SEEK_SET);
-  fread(&page, sizeof(Data), itemsLength, file);
+  fread(&page, sizeof(Data), pageLength, file);
 
   // Pesquisa sequencial na página lida
-  for (i = 0; i < itemsLength; i++)
+  for (i = 0; i < pageLength; i++)
   {
     if (page[i].key == item->key)
     {
