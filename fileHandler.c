@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include "fileHandler.h"
+#include "utils.h"
 
 void generateRandomData(Data *data, int key)
 {
@@ -26,7 +27,7 @@ void generateRandomData(Data *data, int key)
 
 void generateBinaryFile(int numRecords)
 {
-  Data data;
+  Data dataList[1000];
   FILE *file = fopen(DATA_FILE, "wb");
 
   if (file == NULL)
@@ -36,16 +37,23 @@ void generateBinaryFile(int numRecords)
   }
 
   srand(time(NULL));
+  const clock_t startClock = clock();
 
   for (int i = 0; i < numRecords; i++)
   {
-    printf("[+] Gerando %d dados...\n", i + 1);
+    clear();
+    printf("[+] %d de %d dados gerados.\n", i + 1, numRecords);
 
-    generateRandomData(&data, i);
-    fwrite(&data, sizeof(Data), 1, file);
+    generateRandomData(&dataList[i % 1000], i);
+
+    if (i % 1001 == 1)
+      fwrite(&dataList, sizeof(Data), 1000, file);
   }
 
-  printf("[+] Arquivo de dados criado com sucesso!\n");
+  const clock_t endClock = clock();
+
+  const double creationTime = ((double)(endClock - startClock)) / CLOCKS_PER_SEC;
+  printf("[+] Arquivo de dados criado com sucesso em %lf segundos!\n", creationTime);
   fclose(file);
 }
 

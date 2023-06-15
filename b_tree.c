@@ -2,169 +2,157 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "b_tree.h"
+#include "utils.h"
 
 void startBTree(Page *tree)
 {
   tree = NULL;
 }
 
-void searchBTree(Register *item, Page *ptr)
+bool searchBTree(Register *item, Page *node)
 {
-  long i = 1;
-
-  if (ptr == NULL)
+  if (node == NULL)
   {
     printf("[-] Registro não está presente na árvore.\n");
-    return;
+    return false;
   }
-
-  Register prevRegister = ptr->registers[0];
 
   // Pesquisa sequencial para encontrar o intervalo desejado
-  while (i < ptr->n && item->key > prevRegister.key)
-  {
-    prevRegister = ptr->registers[i];
+  int i = 1;
+  while (i < node->n && item->key > node->registers[i - 1].key)
     i++;
-  }
 
-  if (item->key == prevRegister.key)
+  if (item->key == node->registers[i - 1].key)
   {
-    *item = prevRegister;
-    return;
+    *item = node->registers[i - 1];
+    return true;
   }
 
   // Pesquisa em subárvores da esquerda
-  if (item->key < prevRegister.key)
+  if (item->key < node->registers[i - 1].key)
   {
-    searchBTree(item, ptr->pointers[i - 1]);
-    return;
+    return searchBTree(item, node->pointers[i - 1]);
   }
 
   // Pesquisa em subárvores da direita
-  searchBTree(item, ptr->pointers[i]);
+  return searchBTree(item, node->pointers[i]);
 }
 
-void printBTree(Page *tree)
+void printBTree(Page *node)
 {
-  if (tree == NULL)
+  if (node == NULL)
     return;
 
-  for (int i = 0; i < tree->n; i++)
+  for (int i = 0; i < node->n; i++)
   {
-    printBTree(tree->pointers[i]);
+    printBTree(node->pointers[i]);
 
-    if (i != tree->n)
-    {
-      printf(
-          "Key: %d | data1: %ld | data2: %s | data3: %s  \n",
-          tree->registers[i].key, tree->registers[i].data1,
-          tree->registers[i].data2, tree->registers[i].data3);
-    }
+    printf("Key: %d\n", node->registers[i].key);
   }
 }
 
-void insertOnPage(Page *ptr, Register reg, Page *rightPtr)
+void insertOnPage(Page *node, Register reg, Page *rightNode)
 {
-  int k = ptr->n;
-  bool foundPos = k <= 0;
+  int index = node->n;
+  bool foundPos = index <= 0;
 
   while (!foundPos)
   {
-    if (reg.key >= ptr->registers[k - 1].key)
+    if (reg.key >= node->registers[index - 1].key)
     {
       foundPos = true;
       break;
     }
 
-    ptr->registers[k] = ptr->registers[k - 1];
-    ptr->pointers[k + 1] = ptr->pointers[k];
-    k--;
+    node->registers[index] = node->registers[index - 1];
+    node->pointers[index + 1] = node->pointers[index];
+    index--;
 
-    if (k < 1)
+    if (index < 1)
       foundPos = true;
   }
 
-  ptr->registers[k] = reg;
-  ptr->pointers[k + 1] = rightPtr;
-  ptr->n++;
+  node->registers[index] = reg;
+  node->pointers[index + 1] = rightNode;
+  node->n++;
 }
 
-void insert(Register reg, Page *ptr, bool *hasGrown, Register *returnReg, Page **returnPtr)
+void insert(Register reg, Page *node, bool *hasGrown, Register *returnReg, Page **returnNode)
 {
-  long i = 1;
-  long j;
-
-  if (ptr == NULL)
+  if (node == NULL)
   {
     *hasGrown = true;
     *returnReg = reg;
-    *returnPtr = NULL;
+    *returnNode = NULL;
     return;
   }
 
-  while (i < ptr->n && reg.key > ptr->registers[i - 1].key)
-    i++;
+  int index = 1;
 
-  if (reg.key == ptr->registers[i - 1].key)
+  while (index < node->n && reg.key > node->registers[index - 1].key)
+    index++;
+
+  if (reg.key == node->registers[index - 1].key)
   {
-    printf("[-] Erro: Registro já está presente\n");
+    clear();
+    printf("[-] Erro: Registro %d já está presente\n", node->registers[index - 1].key);
     *hasGrown = false;
     return;
   }
 
-  if (reg.key < ptr->registers[i - 1].key)
-    i--;
+  if (reg.key < node->registers[index - 1].key)
+    index--;
 
-  insert(reg, ptr->pointers[i], hasGrown, returnReg, returnPtr);
+  insert(reg, node->pointers[index], hasGrown, returnReg, returnNode);
 
   if (!*hasGrown)
     return;
 
-  if (ptr->n < MM)
+  if (node->n < MM)
   {
-    insertOnPage(ptr, *returnReg, *returnPtr);
+    insertOnPage(node, *returnReg, *returnNode);
     *hasGrown = false;
     return;
   }
 
-  Page *tempPtr = (Page *)malloc(sizeof(Page));
-  tempPtr->n = 0;
-  tempPtr->pointers[0] = NULL;
+  Page *tempNode = (Page *)malloc(sizeof(Page));
+  tempNode->n = 0;
+  tempNode->pointers[0] = NULL;
 
-  if (i < (M + 1))
+  if (index < (M + 1))
   {
-    insertOnPage(tempPtr, ptr->registers[MM - 1], ptr->pointers[MM]);
-    ptr->n--;
-    insertOnPage(ptr, *returnReg, *returnPtr);
+    insertOnPage(tempNode, node->registers[MM - 1], node->pointers[MM]);
+    node->n--;
+    insertOnPage(node, *returnReg, *returnNode);
   }
   else
-    insertOnPage(tempPtr, *returnReg, *returnPtr);
+    insertOnPage(tempNode, *returnReg, *returnNode);
 
-  for (j = M + 2; j <= MM; j++)
+  for (int j = M + 2; j <= MM; j++)
   {
-    insertOnPage(tempPtr, ptr->registers[j - 1], ptr->pointers[j]);
-    ptr->n = M;
-    tempPtr->pointers[0] = ptr->pointers[M + 1];
-    *returnReg = ptr->registers[M];
-    *returnPtr = tempPtr;
+    insertOnPage(tempNode, node->registers[j - 1], node->pointers[j]);
+    node->n = M;
+    tempNode->pointers[0] = node->pointers[M + 1];
+    *returnReg = node->registers[M];
+    *returnNode = tempNode;
   }
 }
 
-void insertBTree(Register reg, Page **ptr)
+void insertBTree(Register reg, Page **node)
 {
   bool hasGrown;
   Register returnReg;
-  Page *returnPtr;
+  Page *returnNode;
 
-  insert(reg, *ptr, &hasGrown, &returnReg, &returnPtr);
+  insert(reg, *node, &hasGrown, &returnReg, &returnNode);
 
   if (hasGrown)
   {
-    Page *tempPtr = (Page *)malloc(sizeof(Page));
-    tempPtr->n = 1;
-    tempPtr->registers[0] = returnReg;
-    tempPtr->pointers[0] = *ptr;
-    tempPtr->pointers[1] = returnPtr;
-    *ptr = tempPtr;
+    Page *tempNode = (Page *)malloc(sizeof(Page));
+    tempNode->n = 1;
+    tempNode->registers[0] = returnReg;
+    tempNode->pointers[0] = *node;
+    tempNode->pointers[1] = returnNode;
+    *node = tempNode;
   }
 }
