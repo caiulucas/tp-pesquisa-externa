@@ -3,4 +3,4 @@
 #include <stdbool.h>
 #include "consts.h"
 
-bool search(Index indexes[], int size, Data *item, FILE *file);
+bool indexedSearch(Index indexes[], int size, Data *item, FILE *file);

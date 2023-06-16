@@ -1,17 +1,16 @@
 #include "btree.h"
 #include <stdlib.h>
+
 void Initialize (pointerType tree)
 {
     tree = NULL;
 }
 
-bool Search (Data *x, pointerType pt)
+bool bTreeSearch (Data *x, pointerType pt)
 {
     long i = 1;
     if (pt == NULL)
-    {
         return false;
-    }
 
     while (i < pt-> n && x->key > pt->r[i -1].key)
         i++;
@@ -20,9 +19,9 @@ bool Search (Data *x, pointerType pt)
         return true;
     
     if (x->key > pt->r[i -1].key)
-        Search (x, pt->p[i]);
+        bTreeSearch (x, pt->p[i]);
     else
-        Search(x, pt->p[i]);
+        bTreeSearch(x, pt->p[i]);
 }
 
 void InsertIntoThePage (pointerType pt, Data data, pointerType rightpt)
@@ -51,17 +50,17 @@ void InsertIntoThePage (pointerType pt, Data data, pointerType rightpt)
     pt->n++;
 }
 
-void Ins (Data data, pointerType pt, short *Cresceu, Data *dataReturn, pointerType *ptReturn)
+bool Ins (Data data, pointerType pt, bool *hasGrown, Data *dataReturn, pointerType *ptReturn)
 {
     long i = 1;
     long j;
     pointerType ptTemp;
     if (pt == NULL)
     {
-        *Cresceu = 1;
+        *hasGrown = true;
         (*dataReturn) = data;
         (*ptReturn) = pt;
-        return;
+        return false;
     }
 
     while (i < pt->n && data.key > pt->r[i-1].key)
@@ -69,20 +68,19 @@ void Ins (Data data, pointerType pt, short *Cresceu, Data *dataReturn, pointerTy
     
     if (data.key == pt->r[i-1].key)
     {
-        printf ("erro presente\n");
-        *(Cresceu) = 0;
-        return;
+        *(hasGrown) = false;
+        return false;
     }
     if (data.key < pt->r[i-1].key)
         i--;
-    Ins(data, pt->p[i], Cresceu, dataReturn, ptReturn);
-    if(!*Cresceu)
-        return;
+    Ins(data, pt->p[i], hasGrown, dataReturn, ptReturn);
+    if(!*hasGrown)
+        return true;
     if (pt->n < MM)
     {
         InsertIntoThePage(pt, *dataReturn, *ptReturn);
-        *Cresceu = 0;
-        return;
+        *hasGrown = false;
+        return true;
     }
     ptTemp = (pointerType)malloc(sizeof(Data));
     ptTemp->n = 0;
@@ -108,11 +106,11 @@ void Ins (Data data, pointerType pt, short *Cresceu, Data *dataReturn, pointerTy
 
 void Insert (Data data, pointerType *pt)
 {
-    short Cresceu;
+    bool hasGrown;
     Data dataReturn;
     PageType *ptReturn, *ptTemp;
-    Ins (data, *pt, &Cresceu, &dataReturn, &ptReturn);
-    if (Cresceu)
+    Ins (data, *pt, &hasGrown, &dataReturn, &ptReturn);
+    if (hasGrown)
     {
         ptTemp = (PageType *) malloc(sizeof(PageType));
         ptTemp->n = 1;

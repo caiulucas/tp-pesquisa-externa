@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include "indexed.h"
 
-bool search(Index indexes[], int size, Data *item, FILE *file)
+bool indexedSearch(Index indexes[], int size, Data *item, FILE *file)
 {
   Data page[PAGE_ITEMS];
 

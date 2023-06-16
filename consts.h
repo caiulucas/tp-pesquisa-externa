@@ -3,6 +3,8 @@
 #define DATA3_SIZE 50
 #define PAGE_ITEMS 4
 #define INDEXES_MAX 100
+#define M 2
+#define MM 2 * M
 #define DATA_FILE "data/data.bin"
 #define INDEXES_FILE "data/indexes.bin"
 
@@ -19,3 +21,12 @@ typedef struct
   int pos;
   int key;
 } Index;
+
+typedef struct
+{
+  int method;
+  int key;
+  int quantity;
+  int situation;
+  
+} Input;

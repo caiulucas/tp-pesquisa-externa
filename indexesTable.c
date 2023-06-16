@@ -7,7 +7,7 @@ int readIndexesTable(Index *indexes)
 
   if (file == NULL)
   {
-    printf("Tabela de indices não encontrada!!\n");
+    printf("Tabela de indices não encontrada!\n");
     return -1;
   }
 
