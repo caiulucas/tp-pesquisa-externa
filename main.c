@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include "fileHandler.h"
 #include "indexed.h"
@@ -40,19 +41,34 @@ void bTreeSearch(FILE *file)
   Data data;
   startBTree(tree);
 
-  while (fread(&data, sizeof(Data), 1, file))
+  FILE *bTreeFile = fopen(B_TREE_FILE, "rb");
+
+  if (!bTreeFile)
   {
-    reg.key = data.key;
-    insertBTree(reg, &tree);
+    bTreeFile = fopen(B_TREE_FILE, "wb");
+
+    while (fread(&data, sizeof(Data), 1, file))
+    {
+      reg.key = data.key;
+      reg.data1 = data.data1;
+      strcpy(reg.data2, data.data2);
+      strcpy(reg.data3, data.data3);
+
+      insertBTree(reg, &tree, bTreeFile);
+    } 
+    fclose(bTreeFile);
+    bTreeFile = fopen(B_TREE_FILE, "rb");
   }
 
+  loadBTree(tree, bTreeFile);
   printBTree(tree);
   printf("Digite a chave do item que deseja buscar: ");
   scanf("%d", &reg.key);
 
   // printBTree(tree);
-  searchBTree(&reg, tree);
-  printf("Key: %d\n", reg.key);
+  if (searchBTree(&reg, tree, file))
+    printf("Key: %d | Data1: %ld | Data2: %s | Data3: %s\n", reg.key, reg.data1, reg.data2, reg.data3);
+  fclose(bTreeFile);
 }
 
 int main(int argc, char const *argv[])

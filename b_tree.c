@@ -9,7 +9,7 @@ void startBTree(Page *tree)
   tree = NULL;
 }
 
-bool searchBTree(Register *item, Page *node)
+bool searchBTree(Register *item, Page *node, FILE *file)
 {
   if (node == NULL)
   {
@@ -19,6 +19,7 @@ bool searchBTree(Register *item, Page *node)
 
   // Pesquisa sequencial para encontrar o intervalo desejado
   int i = 1;
+
   while (i < node->n && item->key > node->registers[i - 1].key)
     i++;
 
@@ -31,11 +32,19 @@ bool searchBTree(Register *item, Page *node)
   // Pesquisa em subárvores da esquerda
   if (item->key < node->registers[i - 1].key)
   {
-    return searchBTree(item, node->pointers[i - 1]);
+    Page childNode;
+    fseek(file, (long)(node->registers[i - 1].key * sizeof(Page)), SEEK_SET);
+    fread(&childNode, sizeof(Page), 1, file);
+
+    printf("N -> %d | Key -> %d\n", childNode.n, childNode.registers[i - 1].key);
+    return searchBTree(item, &childNode, file);
   }
 
   // Pesquisa em subárvores da direita
-  return searchBTree(item, node->pointers[i]);
+  Page childNode;
+  fseek(file, (long)(node->registers[i - 1].key * sizeof(Page)), SEEK_SET);
+  fread(&childNode, sizeof(Page), 1, file);
+  return searchBTree(item, &childNode, file);
 }
 
 void printBTree(Page *node)
@@ -49,6 +58,29 @@ void printBTree(Page *node)
 
     printf("Key: %d\n", node->registers[i].key);
   }
+}
+
+void saveToExtMemory(Page *node, FILE *file)
+{
+  if (!file)
+  {
+    printf("[-] Erro ao abrir o arquivo\n");
+    return;
+  }
+
+  fwrite(node, sizeof(Page), 1, file);
+}
+
+void loadBTree(Page *node, FILE *file)
+{
+
+  fread(node, sizeof(Page), 1, file);
+
+  for (int i = 0; i < node->n; i++)
+  {
+    fread(node->pointers[i], sizeof(Page), 1, file);
+  }
+  fseek(file, 0, SEEK_SET);
 }
 
 void insertOnPage(Page *node, Register reg, Page *rightNode)
@@ -77,9 +109,9 @@ void insertOnPage(Page *node, Register reg, Page *rightNode)
   node->n++;
 }
 
-void insert(Register reg, Page *node, bool *hasGrown, Register *returnReg, Page **returnNode)
+void insert(Register reg, Page *node, bool *hasGrown, Register *returnReg, Page **returnNode, FILE *file)
 {
-  if (node == NULL)
+  if (!node)
   {
     *hasGrown = true;
     *returnReg = reg;
@@ -103,7 +135,7 @@ void insert(Register reg, Page *node, bool *hasGrown, Register *returnReg, Page 
   if (reg.key < node->registers[index - 1].key)
     index--;
 
-  insert(reg, node->pointers[index], hasGrown, returnReg, returnNode);
+  insert(reg, node->pointers[index], hasGrown, returnReg, returnNode, file);
 
   if (!*hasGrown)
     return;
@@ -115,6 +147,7 @@ void insert(Register reg, Page *node, bool *hasGrown, Register *returnReg, Page 
     return;
   }
 
+  saveToExtMemory(node, file);
   Page *tempNode = (Page *)malloc(sizeof(Page));
   tempNode->n = 0;
   tempNode->pointers[0] = NULL;
@@ -138,13 +171,13 @@ void insert(Register reg, Page *node, bool *hasGrown, Register *returnReg, Page 
   }
 }
 
-void insertBTree(Register reg, Page **node)
+void insertBTree(Register reg, Page **node, FILE *file)
 {
   bool hasGrown;
   Register returnReg;
   Page *returnNode;
 
-  insert(reg, *node, &hasGrown, &returnReg, &returnNode);
+  insert(reg, *node, &hasGrown, &returnReg, &returnNode, file);
 
   if (hasGrown)
   {
