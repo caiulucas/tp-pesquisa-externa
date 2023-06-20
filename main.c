@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <time.h>
 #include "fileHandler.h"
 #include "indexed.h"
 #include "indexesTable.h"
 #include "consts.h"
-#include "btree.h"
-#include <stdlib.h>
-bool fileHandling(Input input)
+#include "b_tree.h"
+
+void indexedSearch(FILE *file)
 {
   FILE *file = fopen(DATA_FILE, "rb");
   if (!file)
