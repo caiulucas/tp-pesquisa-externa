@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "indexesTable.h"
+#include "utils.h"
 
 int readIndexesTable(Index *indexes)
 {
@@ -45,16 +46,12 @@ int createIndexesTable(Index *indexes, FILE *dataFile)
     {
       indexes[pos].key = item.key;
       indexes[pos].pos = pos + 1;
+      fwrite(&indexes[pos], sizeof(Index), 1, file);
       pos++;
     }
   }
 
-  for (int i = 0; i < pos; i++)
-  {
-    fwrite(&indexes[i], sizeof(Index), 1, file);
-  }
-
-  printf("Tabela de índices criada com sucesso!\n");
+  printf("[+] Tabela de índices criada com sucesso!\n");
   fclose(file);
   fseek(dataFile, 0, SEEK_SET);
   return pos;

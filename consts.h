@@ -1,8 +1,7 @@
 #pragma once
 #define DATA2_SIZE 1000
 #define DATA3_SIZE 5000
-#define PAGE_ITEMS 4
-#define INDEXES_MAX 100
+#define PAGE_ITEMS 1000
 #define M 2
 #define MM 2 * M
 #define DATA_FILE "data/data.bin"

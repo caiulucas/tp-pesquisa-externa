@@ -27,7 +27,7 @@ void generateRandomData(Data *data, int key)
 
 void generateBinaryFile(int numRecords)
 {
-  Data dataList[1000];
+  Data data;
   FILE *file = fopen(DATA_FILE, "wb");
 
   if (file == NULL)
@@ -39,17 +39,15 @@ void generateBinaryFile(int numRecords)
   srand(time(NULL));
   const clock_t startClock = clock();
 
-  for (int i = 0; i < numRecords - 1; i++)
+  for (int i = 0; i < numRecords; i++)
   {
     clear();
     printf("[+] %d de %d dados gerados.\n", i + 1, numRecords);
 
-    generateRandomData(&dataList[i % 1000], i);
-
-    if (i % 1001 == 1)
-      fwrite(&dataList, sizeof(Data), 1000, file);
+    generateRandomData(&data, i);
+    fwrite(&data, sizeof(Data), 1, file);
   }
-
+  
   const clock_t endClock = clock();
 
   const double creationTime = ((double)(endClock - startClock)) / CLOCKS_PER_SEC;
@@ -59,8 +57,9 @@ void generateBinaryFile(int numRecords)
 
 void printBinaryFile(FILE *file)
 {
+  
   Data data;
-  while (fread(&data, sizeof(Data), 1, file))
+  while (fread(&data, sizeof(Data), 1, file) == 1)
   {
     printf("key: %d - data1: %ld - data2: %s - data3: %s\n", data.key, data.data1, data.data2, data.data3);
   }

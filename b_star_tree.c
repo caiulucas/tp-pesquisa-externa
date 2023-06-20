@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include "b_star_tree.h"
 
-bool searchBStarTree(Register *reg, Page **node)
+bool searchBStarTree(Data *reg, Page **node)
 {
   Page *page = *node;
 

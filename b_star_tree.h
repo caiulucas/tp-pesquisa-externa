@@ -1,14 +1,6 @@
 #pragma once
 #include "consts.h"
 
-typedef struct
-{
-  int key;
-  long int data1;
-  char data2[DATA2_SIZE];
-  char data3[DATA3_SIZE];
-} Register;
-
 typedef enum
 {
   Internal,
@@ -25,7 +17,7 @@ typedef struct InternalPage
 typedef struct ExternalPage
 {
   int nExternal;
-  Register externalReg[MM2];
+  Data externalReg[MM2];
 } ExternalPage;
 
 typedef struct Page
@@ -39,4 +31,4 @@ typedef struct Page
   } pages;
 } Page;
 
-bool searchBStarTree(Register *reg, Page **node);
+bool searchBStarTree(Data *reg, Page **node);

@@ -32,19 +32,11 @@ bool searchBTree(Data *item, Page *node, FILE *file)
   // Pesquisa em subárvores da esquerda
   if (item->key < node->registers[i - 1].key)
   {
-    Page childNode;
-    fseek(file, (long)(node->registers[i - 1].key * sizeof(Page)), SEEK_SET);
-    fread(&childNode, sizeof(Page), 1, file);
-
-    printf("N -> %d | Key -> %d\n", childNode.n, childNode.registers[i - 1].key);
-    return searchBTree(item, &childNode, file);
+    return searchBTree(item, node->pointers[i - 1], file);
   }
 
   // Pesquisa em subárvores da direita
-  Page childNode;
-  fseek(file, (long)(node->registers[i - 1].key * sizeof(Page)), SEEK_SET);
-  fread(&childNode, sizeof(Page), 1, file);
-  return searchBTree(item, &childNode, file);
+  return searchBTree(item, node->pointers[i], file);
 }
 
 void printBTree(Page *node)
@@ -73,7 +65,6 @@ void saveToExtMemory(Page *node, FILE *file)
 
 void loadBTree(Page *node, FILE *file)
 {
-
   fread(node, sizeof(Page), 1, file);
 
   for (int i = 0; i < node->n; i++)
@@ -126,7 +117,6 @@ void insert(Data reg, Page *node, bool *hasGrown, Data *returnReg, Page **return
 
   if (reg.key == node->registers[index - 1].key)
   {
-    clear();
     printf("[-] Erro: Registro %d já está presente\n", node->registers[index - 1].key);
     *hasGrown = false;
     return;
@@ -147,7 +137,6 @@ void insert(Data reg, Page *node, bool *hasGrown, Data *returnReg, Page **return
     return;
   }
 
-  saveToExtMemory(node, file);
   Page *tempNode = (Page *)malloc(sizeof(Page));
   tempNode->n = 0;
   tempNode->pointers[0] = NULL;
