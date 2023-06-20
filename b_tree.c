@@ -9,7 +9,7 @@ void startBTree(Page *tree)
   tree = NULL;
 }
 
-bool searchBTree(Register *item, Page *node, FILE *file)
+bool searchBTree(Data *item, Page *node, FILE *file)
 {
   if (node == NULL)
   {
@@ -83,7 +83,7 @@ void loadBTree(Page *node, FILE *file)
   fseek(file, 0, SEEK_SET);
 }
 
-void insertOnPage(Page *node, Register reg, Page *rightNode)
+void insertOnPage(Page *node, Data reg, Page *rightNode)
 {
   int index = node->n;
   bool foundPos = index <= 0;
@@ -109,7 +109,7 @@ void insertOnPage(Page *node, Register reg, Page *rightNode)
   node->n++;
 }
 
-void insert(Register reg, Page *node, bool *hasGrown, Register *returnReg, Page **returnNode, FILE *file)
+void insert(Data reg, Page *node, bool *hasGrown, Data *returnReg, Page **returnNode, FILE *file)
 {
   if (!node)
   {
@@ -171,10 +171,10 @@ void insert(Register reg, Page *node, bool *hasGrown, Register *returnReg, Page 
   }
 }
 
-void insertBTree(Register reg, Page **node, FILE *file)
+void insertBTree(Data reg, Page **node, FILE *file)
 {
   bool hasGrown;
-  Register returnReg;
+  Data returnReg;
   Page *returnNode;
 
   insert(reg, *node, &hasGrown, &returnReg, &returnNode, file);

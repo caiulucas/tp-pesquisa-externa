@@ -8,8 +8,6 @@
 #define DATA_FILE "data/data.bin"
 #define INDEXES_FILE "data/indexes.bin"
 #define B_TREE_FILE "data/b_tree.bin"
-#define M 2
-#define MM 4
 #define MM2 4
 
 typedef struct
@@ -32,5 +30,4 @@ typedef struct
   int key;
   int quantity;
   int situation;
-  
 } Input;

@@ -8,7 +8,7 @@
 #include "consts.h"
 #include "b_tree.h"
 
-void indexedSearch(FILE *file)
+bool fileHandling(Input input)
 {
   FILE *file = fopen(DATA_FILE, "rb");
   if (!file)
@@ -25,11 +25,10 @@ void indexedSearch(FILE *file)
   }
 
   return true;
-  printBinaryFile(file);
-  printf("-------------------------\n");
+  
 }
 
-bool index(FILE *file, int key)
+bool indexSearch(FILE *file, int key)
 {
   Index *indexes = malloc(sizeof(Index) * INDEXES_MAX);
   int pos = readIndexesTable(indexes);
@@ -54,39 +53,41 @@ bool index(FILE *file, int key)
 
 bool bTree(FILE *file, int key)
 {
-   // Lê a página do arquivo
-  pointerType tree;
-  Initialize (tree);
+  // Lê a página do arquivo
+  Page *tree;
+  startBTree(tree);
   Data x;
   x.key = key;
   fread(&x, sizeof(Data), MM, file);
-  if(bTreeSearch(&x, tree))
-    printf ("Chave encontrada!") ;
+  if (searchBTree(&x, tree, file))
+    printf("Chave encontrada!");
   else
-    printf ("Chave não encontrada!");
-
+    printf("Chave não encontrada!");
 }
 
-
-
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
-  //  pesquisa <método> <quantidade> <situação> <chave> [-P] 
+  //  pesquisa <método> <quantidade> <situação> <chave> [-P]
 
   /* 1- método
      2 - quantidade
      3 - chave
-     5 - 
+     5 -
   */
-  FILE *file;
-  
-  Input input;
-  input.method = atoi (argv[1]);
-  input.quantity = atoi (argv[2]);
-  input.key= atoi (argv[3]);
+ if(argc < 3){
+  printf("[-] Número de argumentos inválidos.\n");
+  return EXIT_FAILURE;
+ }
 
-  printf ("%d %d\n", input.method, input.key);
-  if(!fileHandling(input)) 
+  FILE *file;
+
+  Input input;
+  input.method = atoi(argv[1]);
+  input.quantity = atoi(argv[2]);
+  input.key = atoi(argv[3]);
+
+  printf("%d %d\n", input.method, input.key);
+  if (!fileHandling(input))
   {
     printf("[-] Falha ao abrir o arquivo.");
     return EXIT_FAILURE;
@@ -95,19 +96,17 @@ int main(int argc, char *argv[])
   switch (input.method)
   {
   case 1:
-    if(!index(file,input.key))
-    {
+    if (!indexSearch(file, input.key))
       return EXIT_FAILURE;
-    }
+
     break;
   case 2:
-    if(!bTree(file,input.key))
-    {
+    if (!bTree(file, input.key))
       return EXIT_FAILURE;
-    }
+
     break;
   case 3:
-  
+
     break;
   }
   return EXIT_SUCCESS;
