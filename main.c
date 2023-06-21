@@ -16,14 +16,19 @@ bool fileHandling(Input input, FILE *file)
 
 bool indexSearch(FILE *file, Input input)
 {
-  size_t indexesSz = sizeof(Index) * input.quantity / PAGE_ITEMS;
+  size_t indexesSz = (sizeof(Index) * input.quantity) / PAGE_ITEMS;
   Index *indexes = malloc(indexesSz);
+
+
   int pos = readIndexesTable(indexes);
   if (pos == -1)
   {
     pos = createIndexesTable(indexes, file);
     pos = readIndexesTable(indexes);
   }
+
+  // printIndexedTable(indexes, input.quantity / PAGE_ITEMS);
+
   Data item;
   fflush(stdout);
   item.key = input.key;
@@ -43,8 +48,8 @@ bool bTree(int key, FILE *file)
 {
   // Lê a página do arquivo
 
-  Page *tree;
-  startBTree(tree);
+  Page *tree = NULL;
+
   Data x;
   x.key = key;
 
@@ -78,7 +83,7 @@ int main(int argc, char *argv[])
      5 -
   */
   clock_t startClock = clock();
-  if (argc < 3)
+  if (argc < 4)
   {
     printf("[-] Número de argumentos inválidos.\n");
     return EXIT_FAILURE;
@@ -102,7 +107,9 @@ int main(int argc, char *argv[])
     printf("[-] Erro ao abrir o arquivo de dados.");
     return EXIT_FAILURE;
   }
-  // printBinaryFile(file);
+
+  if (argc > 4 && strcmp(argv[4], "-p\n"))
+    printBinaryFile(file);
 
   printf("%d %d\n", input.method, input.key);
 

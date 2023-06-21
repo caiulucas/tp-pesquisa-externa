@@ -4,11 +4,6 @@
 #include "b_tree.h"
 #include "utils.h"
 
-void startBTree(Page *tree)
-{
-  tree = NULL;
-}
-
 bool searchBTree(Data *item, Page *node, FILE *file)
 {
   if (node == NULL)

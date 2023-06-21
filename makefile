@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -c
+CFLAGS := -c -Wall
 
 SRC := main.c indexed.c indexesTable.c fileHandler.c b_tree.c b_star_tree.c utils.c
 OBJ := $(SRC:.c=.o)

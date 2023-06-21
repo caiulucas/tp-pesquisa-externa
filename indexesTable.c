@@ -29,30 +29,38 @@ int createIndexesTable(Index *indexes, FILE *dataFile)
 
   if (file == NULL)
   {
-    printf("Erro ao abrir o arquivo\n");
+    printf("[-] Erro ao abrir o arquivo\n");
     return 0;
   }
 
   Data item;
 
-  int count = 0;
+  // int count = 0;
   int pos = 0;
 
-  printf("Criando tabela de índices...\n");
   while (fread(&item, sizeof(Data), 1, dataFile) == 1)
   {
-    count++;
-    if (count % PAGE_ITEMS == 1) // sugerir mudar o resto para 3
-    {
-      indexes[pos].key = item.key;
-      indexes[pos].pos = pos + 1;
-      fwrite(&indexes[pos], sizeof(Index), 1, file);
-      pos++;
-    }
+
+    indexes[pos].key = item.key;
+    indexes[pos].pos = pos + 1;
+    fwrite(&indexes[pos], sizeof(Index), 1, file);
+    pos++;
+    fseek(dataFile, sizeof(Data) * (PAGE_ITEMS - 1), SEEK_CUR);
+
+    clear();
+    printf("[+] %d índices criados.\n", pos);
   }
 
   printf("[+] Tabela de índices criada com sucesso!\n");
   fclose(file);
   fseek(dataFile, 0, SEEK_SET);
   return pos;
+}
+
+void printIndexedTable(Index *indexes, size_t quantity)
+{
+  for (size_t i = 0; i < quantity; i++)
+  {
+    printf("Key -> %d | Pos -> %d\n", indexes[i].key, indexes[i].pos);
+  }
 }
