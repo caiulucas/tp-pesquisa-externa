@@ -98,21 +98,21 @@ void insert(Data reg, Page *node, bool *hasGrown, Data *returnReg, Page **return
   while (index < node->n && reg.key > node->keys[index - 1])
     index++;
 
-  if (reg.key == node->keys[index - 1] )
-  {
-    printf("[-] Erro: Registro %d já está presente\n", node->keys[index - 1]);
-    *hasGrown = false;
-    return;
-  }
+  // if (reg.key == node->keys[index - 1] && reg.key != 0)
+  // {
+  //   printf("[-] Erro: Registro %d já está presente\n", node->keys[index - 1]);
+  //   *hasGrown = false;
+  //   return;
+  // }
 
   if (reg.key < node->keys[index - 1])
     index--;
 
-  Page *aux = (Page* ) malloc(sizeof(Page));
+  Page *aux = (Page *)malloc(sizeof(Page));
   size_t displacement = node->children[index] * sizeof(Page);
   fseek(bTreeFile, displacement, SEEK_SET);
   fread(aux, sizeof(Page), 1, bTreeFile);
-
+  printf("children %d \n", index);
   insert(reg, aux, hasGrown, returnReg, returnNode, file, bTreeFile);
 
   if (!*hasGrown)
@@ -131,7 +131,7 @@ void insert(Data reg, Page *node, bool *hasGrown, Data *returnReg, Page **return
 
   if (index < (M + 1))
   {
-    Page *aux = (Page *)malloc(sizeof(Page));
+    aux = (Page *)malloc(sizeof(Page));
     size_t displacement = node->children[MM] * sizeof(Page);
     fseek(bTreeFile, displacement, SEEK_SET);
     fread(aux, sizeof(Page), 1, bTreeFile);
@@ -145,7 +145,7 @@ void insert(Data reg, Page *node, bool *hasGrown, Data *returnReg, Page **return
 
   for (int j = M + 2; j <= MM; j++)
   {
-    Page *aux = (Page *)malloc(sizeof(Page));
+    aux = (Page *)malloc(sizeof(Page));
     size_t displacement = node->children[j] * sizeof(Page);
     fseek(bTreeFile, displacement, SEEK_SET);
     fread(aux, sizeof(Page), 1, bTreeFile);
@@ -156,6 +156,9 @@ void insert(Data reg, Page *node, bool *hasGrown, Data *returnReg, Page **return
     returnReg->key = node->keys[M];
     *returnNode = tempNode;
   }
+
+  free(aux);
+  free(tempNode);
 }
 
 void insertBTree(Data reg, Page **node, FILE *dataFile, FILE *bTreeFile, int pos)

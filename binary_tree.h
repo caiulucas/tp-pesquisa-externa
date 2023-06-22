@@ -3,13 +3,14 @@
 
 typedef struct Node
 {
-  Data data;
+  Index index;
   struct Node *leftNode;
   struct Node *rightNode;
 } Node;
 
 typedef Node * BinaryTree;
 
-bool insertBinaryTree(Node **root, Data data)
-void printBinaryTree(Node *root, FILE *file);
-bool findBinaryTree(Node *root, int key, Data *data);
+void startBinaryTree(Node **root);
+bool insertBinaryTree(Node **root, Index index);
+void printBinaryTree(Node *root);
+bool searchBinaryTree(Node *root, Data *item, FILE *dataFile);

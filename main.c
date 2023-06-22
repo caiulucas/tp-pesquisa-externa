@@ -7,11 +7,9 @@
 #include "indexesTable.h"
 #include "consts.h"
 #include "b_tree.h"
+#include "binary_tree.h"
+#include "utils.h"
 
-bool fileHandling(Input input, FILE *file)
-{
-  return true;
-}
 
 bool indexSearch(FILE *file, Input input)
 {
@@ -25,15 +23,14 @@ bool indexSearch(FILE *file, Input input)
     pos = readIndexesTable(indexes);
   }
 
-  printIndexedTable(indexes, input.quantity / PAGE_ITEMS);
-
   Data item;
   fflush(stdout);
   item.key = input.key;
 
   if (indexedSearch(indexes, pos, &item, file))
   {
-    printf("Item encontrado: %d %ld\n", item.key, item.data1);
+    printf("[INFO] Item encontrado.\n");
+    printData(item);
     return true;
   }
 
@@ -48,7 +45,7 @@ bool bTree(int key, FILE *file)
   Page *tree = malloc(sizeof(Page) * 1000000);
   FILE *bTreeFile = fopen(B_TREE_FILE, "wb");
 
-  if(!bTreeFile)
+  if (!bTreeFile)
     return false;
 
   Data item;
@@ -68,11 +65,39 @@ bool bTree(int key, FILE *file)
   if (searchBTree(&item, tree, file, bTreeFile))
   {
     printf("[+] Chave encontrada!\n");
-    printf("Key -> %d | data1 -> %ld\n", item.key, item.data1);
+    printData(item);
     return true;
   }
 
   printf("Chave não encontrada!\n");
+  return false;
+}
+
+bool binaryTree(int key, FILE *dataFile)
+{
+  Index index;
+
+  Node *root;
+  startBinaryTree(&root);
+
+  FILE *indexesFile = fopen(INDEXES_FILE, "rb");
+
+  while (fread(&index, sizeof(Index), 1, indexesFile) == 1)
+  {
+    insertBinaryTree(&root, index);
+  }
+
+  Data item;
+  item.key = key;
+
+  if (searchBinaryTree(root, &item, dataFile))
+  {
+    printf("[+] Item encontrado!\n");
+    printData(item);
+    return true;
+  }
+
+  printf("[+] Item não encontrado!\n");
   return false;
 }
 
@@ -100,14 +125,14 @@ int main(int argc, char *argv[])
   FILE *file = fopen(DATA_FILE, "rb");
   if (!file)
   {
-    printf("[-] Arquivo de dados não encontrado.\n");
+    printf("[FAIL] Arquivo de dados não encontrado.\n");
     generateBinaryFile(input.quantity);
     file = fopen(DATA_FILE, "rb");
   }
 
   if (!file)
   {
-    printf("[-] Erro ao abrir o arquivo de dados.");
+    printf("[FAIl] Erro ao abrir o arquivo de dados.");
     return EXIT_FAILURE;
   }
 
@@ -123,17 +148,18 @@ int main(int argc, char *argv[])
       return EXIT_FAILURE;
     break;
   case 2:
-    if (!bTree(input.key, file))
+    if (!binaryTree(input.key, file))
       return EXIT_FAILURE;
-
     break;
   case 3:
+    if (!bTree(input.key, file))
+      return EXIT_FAILURE;
     break;
   }
   clock_t endClock = clock();
   double executionType = (double)(endClock - startClock) / CLOCKS_PER_SEC;
 
-  printf("[+] Tempo de execução = %lfs.\n", executionType);
+  printf("[INFO] Tempo de execução = %lfs.\n", executionType);
 
   return EXIT_SUCCESS;
 }
