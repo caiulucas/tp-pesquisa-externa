@@ -16,16 +16,15 @@ bool indexedSearch(Index indexes[], int size, Data *item, FILE *file)
   if (i == 0)
     return false;
 
-  int pageLength = PAGE_ITEMS;
+  size_t pageLength = PAGE_ITEMS;
   // A última página não deve ser completa
-  if (i < size) //qual a necessidade?
-  {
+  if (i == size) {
     fseek(file, 0, SEEK_END);
     pageLength = (ftell(file) / sizeof(Data)) % PAGE_ITEMS;
   }
 
   // Lê a página do arquivo
-  int displacement = (indexes[i - 1].pos - 1) * PAGE_ITEMS * sizeof(Data);
+  size_t displacement = (indexes[i - 1].pos - 1) * PAGE_ITEMS * sizeof(Data);
   fseek(file, displacement, SEEK_SET);
   fread(&page, sizeof(Data), pageLength, file);
 

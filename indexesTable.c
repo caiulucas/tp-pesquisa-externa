@@ -40,7 +40,6 @@ int createIndexesTable(Index *indexes, FILE *dataFile)
 
   while (fread(&item, sizeof(Data), 1, dataFile) == 1)
   {
-
     indexes[pos].key = item.key;
     indexes[pos].pos = pos + 1;
     fwrite(&indexes[pos], sizeof(Index), 1, file);
@@ -53,7 +52,7 @@ int createIndexesTable(Index *indexes, FILE *dataFile)
 
   printf("[+] Tabela de índices criada com sucesso!\n");
   fclose(file);
-  fseek(dataFile, 0, SEEK_SET);
+  rewind(dataFile);
   return pos;
 }
 

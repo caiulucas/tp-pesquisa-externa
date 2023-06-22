@@ -10,7 +10,6 @@
 
 bool fileHandling(Input input, FILE *file)
 {
-
   return true;
 }
 
@@ -19,7 +18,6 @@ bool indexSearch(FILE *file, Input input)
   size_t indexesSz = (sizeof(Index) * input.quantity) / PAGE_ITEMS;
   Index *indexes = malloc(indexesSz);
 
-
   int pos = readIndexesTable(indexes);
   if (pos == -1)
   {
@@ -27,7 +25,7 @@ bool indexSearch(FILE *file, Input input)
     pos = readIndexesTable(indexes);
   }
 
-  // printIndexedTable(indexes, input.quantity / PAGE_ITEMS);
+  printIndexedTable(indexes, input.quantity / PAGE_ITEMS);
 
   Data item;
   fflush(stdout);
@@ -47,25 +45,30 @@ bool indexSearch(FILE *file, Input input)
 bool bTree(int key, FILE *file)
 {
   // Lê a página do arquivo
+  Page *tree = malloc(sizeof(Page) * 1000000);
+  FILE *bTreeFile = fopen(B_TREE_FILE, "wb");
 
-  Page *tree = NULL;
+  if(!bTreeFile)
+    return false;
 
-  Data x;
-  x.key = key;
+  Data item;
+  item.key = key;
 
-  fseek(file, 0, SEEK_SET);
-  while (fread(&x, sizeof(Data), 1, file) == 1)
+  rewind(file);
+
+  int pos = 1;
+  while (fread(&item, sizeof(Data), 1, file) == 1)
   {
-    insertBTree(x, &tree, NULL);
+    insertBTree(item, &tree, file, bTreeFile, pos++);
   }
 
-  x.key = key;
+  item.key = key;
 
   // printBTree(tree);
-  if (searchBTree(&x, tree, NULL))
+  if (searchBTree(&item, tree, file, bTreeFile))
   {
     printf("[+] Chave encontrada!\n");
-    printf("Key -> %d | data1 -> %ld\n", x.key, x.data1);
+    printf("Key -> %d | data1 -> %ld\n", item.key, item.data1);
     return true;
   }
 
@@ -118,7 +121,6 @@ int main(int argc, char *argv[])
   case 1:
     if (!indexSearch(file, input))
       return EXIT_FAILURE;
-
     break;
   case 2:
     if (!bTree(input.key, file))

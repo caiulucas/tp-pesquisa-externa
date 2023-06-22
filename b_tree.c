@@ -4,7 +4,7 @@
 #include "b_tree.h"
 #include "utils.h"
 
-bool searchBTree(Data *item, Page *node, FILE *file)
+bool searchBTree(Data *item, Page *node, FILE *dataFile, FILE *bTreeFile)
 {
   if (node == NULL)
   {
@@ -15,87 +15,75 @@ bool searchBTree(Data *item, Page *node, FILE *file)
   // Pesquisa sequencial para encontrar o intervalo desejado
   int i = 1;
 
-  while (i < node->n && item->key > node->registers[i - 1].key)
+  while (i < node->n && item->key > node->keys[i - 1])
     i++;
 
-  if (item->key == node->registers[i - 1].key)
+  if (item->key == node->keys[i - 1])
   {
-    *item = node->registers[i - 1];
+    size_t displacement = node->children[i - 1] * sizeof(Data);
+    fseek(dataFile, displacement, SEEK_SET);
+    fread(item, sizeof(Data), 1, dataFile);
     return true;
   }
 
   // Pesquisa em subárvores da esquerda
-  if (item->key < node->registers[i - 1].key)
-  {
-    return searchBTree(item, node->pointers[i - 1], file);
-  }
+  size_t displacement;
+  if (item->key < node->keys[i - 1])
+    displacement = node->children[i - 1] * sizeof(Data);
+  else
+    displacement = node->children[i] * sizeof(Data);
 
-  // Pesquisa em subárvores da direita
-  return searchBTree(item, node->pointers[i], file);
+  Page *aux = (Page *)malloc(sizeof(Page));
+  fseek(bTreeFile, displacement, SEEK_SET);
+  fread(aux, sizeof(Page), 1, bTreeFile);
+
+  return searchBTree(item, aux, dataFile, bTreeFile);
 }
 
-void printBTree(Page *node)
+void printBTree(Page *node, FILE *bTreeFile)
 {
   if (node == NULL)
     return;
 
   for (int i = 0; i < node->n; i++)
   {
-    printBTree(node->pointers[i]);
-
-    printf("Key: %d\n", node->registers[i].key);
+    Page *aux = (Page *)malloc(sizeof(Page));
+    size_t displacement = node->children[i] * sizeof(Page);
+    fseek(bTreeFile, displacement, SEEK_SET);
+    fread(aux, sizeof(Page), 1, bTreeFile);
+    printBTree(aux, bTreeFile);
+    printf("Key: %d\n", node->keys[i]);
   }
 }
 
-void saveToExtMemory(Page *node, FILE *file)
-{
-  if (!file)
-  {
-    printf("[-] Erro ao abrir o arquivo\n");
-    return;
-  }
-
-  fwrite(node, sizeof(Page), 1, file);
-}
-
-void loadBTree(Page *node, FILE *file)
-{
-  fread(node, sizeof(Page), 1, file);
-
-  for (int i = 0; i < node->n; i++)
-  {
-    fread(node->pointers[i], sizeof(Page), 1, file);
-  }
-  fseek(file, 0, SEEK_SET);
-}
-
-void insertOnPage(Page *node, Data reg, Page *rightNode)
+void insertOnPage(Page *node, int key, Page *rightNode, FILE *bTreeFile)
 {
   int index = node->n;
   bool foundPos = index <= 0;
 
   while (!foundPos)
   {
-    if (reg.key >= node->registers[index - 1].key)
+    if (key >= node->keys[index - 1])
     {
       foundPos = true;
       break;
     }
 
-    node->registers[index] = node->registers[index - 1];
-    node->pointers[index + 1] = node->pointers[index];
+    node->keys[index] = node->keys[index - 1];
+    node->children[index + 1] = node->children[index];
     index--;
 
     if (index < 1)
       foundPos = true;
   }
 
-  node->registers[index] = reg;
-  node->pointers[index + 1] = rightNode;
+  node->keys[index] = key;
+  node->children[index + 1] = rightNode->pos;
   node->n++;
+  fwrite(node, sizeof(Page), 1, bTreeFile);
 }
 
-void insert(Data reg, Page *node, bool *hasGrown, Data *returnReg, Page **returnNode, FILE *file)
+void insert(Data reg, Page *node, bool *hasGrown, Data *returnReg, Page **returnNode, FILE *file, FILE *bTreeFile)
 {
   if (!node)
   {
@@ -107,69 +95,87 @@ void insert(Data reg, Page *node, bool *hasGrown, Data *returnReg, Page **return
 
   int index = 1;
 
-  while (index < node->n && reg.key > node->registers[index - 1].key)
+  while (index < node->n && reg.key > node->keys[index - 1])
     index++;
 
-  if (reg.key == node->registers[index - 1].key)
+  if (reg.key == node->keys[index - 1] )
   {
-    printf("[-] Erro: Registro %d já está presente\n", node->registers[index - 1].key);
+    printf("[-] Erro: Registro %d já está presente\n", node->keys[index - 1]);
     *hasGrown = false;
     return;
   }
 
-  if (reg.key < node->registers[index - 1].key)
+  if (reg.key < node->keys[index - 1])
     index--;
 
-  insert(reg, node->pointers[index], hasGrown, returnReg, returnNode, file);
+  Page *aux = (Page* ) malloc(sizeof(Page));
+  size_t displacement = node->children[index] * sizeof(Page);
+  fseek(bTreeFile, displacement, SEEK_SET);
+  fread(aux, sizeof(Page), 1, bTreeFile);
+
+  insert(reg, aux, hasGrown, returnReg, returnNode, file, bTreeFile);
 
   if (!*hasGrown)
     return;
 
   if (node->n < MM)
   {
-    insertOnPage(node, *returnReg, *returnNode);
+    insertOnPage(node, returnReg->key, *returnNode, bTreeFile);
     *hasGrown = false;
     return;
   }
 
   Page *tempNode = (Page *)malloc(sizeof(Page));
   tempNode->n = 0;
-  tempNode->pointers[0] = NULL;
+  tempNode->children[0] = -1;
 
   if (index < (M + 1))
   {
-    insertOnPage(tempNode, node->registers[MM - 1], node->pointers[MM]);
+    Page *aux = (Page *)malloc(sizeof(Page));
+    size_t displacement = node->children[MM] * sizeof(Page);
+    fseek(bTreeFile, displacement, SEEK_SET);
+    fread(aux, sizeof(Page), 1, bTreeFile);
+
+    insertOnPage(tempNode, node->keys[MM - 1], aux, bTreeFile);
     node->n--;
-    insertOnPage(node, *returnReg, *returnNode);
+    insertOnPage(node, returnReg->key, *returnNode, bTreeFile);
   }
   else
-    insertOnPage(tempNode, *returnReg, *returnNode);
+    insertOnPage(tempNode, returnReg->key, *returnNode, bTreeFile);
 
   for (int j = M + 2; j <= MM; j++)
   {
-    insertOnPage(tempNode, node->registers[j - 1], node->pointers[j]);
+    Page *aux = (Page *)malloc(sizeof(Page));
+    size_t displacement = node->children[j] * sizeof(Page);
+    fseek(bTreeFile, displacement, SEEK_SET);
+    fread(aux, sizeof(Page), 1, bTreeFile);
+
+    insertOnPage(tempNode, node->keys[j - 1], aux, bTreeFile);
     node->n = M;
-    tempNode->pointers[0] = node->pointers[M + 1];
-    *returnReg = node->registers[M];
+    tempNode->children[0] = node->children[M + 1];
+    returnReg->key = node->keys[M];
     *returnNode = tempNode;
   }
 }
 
-void insertBTree(Data reg, Page **node, FILE *file)
+void insertBTree(Data reg, Page **node, FILE *dataFile, FILE *bTreeFile, int pos)
 {
   bool hasGrown;
   Data returnReg;
   Page *returnNode;
 
-  insert(reg, *node, &hasGrown, &returnReg, &returnNode, file);
+  insert(reg, *node, &hasGrown, &returnReg, &returnNode, dataFile, bTreeFile);
 
   if (hasGrown)
   {
     Page *tempNode = (Page *)malloc(sizeof(Page));
     tempNode->n = 1;
-    tempNode->registers[0] = returnReg;
-    tempNode->pointers[0] = *node;
-    tempNode->pointers[1] = returnNode;
+    tempNode->pos = pos;
+    tempNode->keys[0] = returnReg.key;
+    tempNode->children[0] = (*node)->pos;
+    tempNode->children[1] = returnNode->pos;
     *node = tempNode;
+    fwrite(tempNode, sizeof(Page), 1, bTreeFile);
+    free(tempNode);
   }
 }
