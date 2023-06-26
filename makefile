@@ -5,9 +5,12 @@ SRC := main.c indexed.c fileHandler.c b_tree.c b_star_tree.c utils.c binary_tree
 OBJ := $(SRC:.c=.o)
 EXECUTABLE := exe
 
+DIR_NAME = data
+
 .PHONY: all clean run
 
 all: $(EXECUTABLE)
+all: create_directory
 
 $(EXECUTABLE): $(OBJ)
 	$(CC) $^ -o $@
@@ -18,6 +21,9 @@ $(EXECUTABLE): $(OBJ)
 
 run: $(EXECUTABLE)
 	@./$(EXECUTABLE)
+
+create_directory:
+	mkdir $(DIR_NAME)
 
 clean:
 	rm -rf $(OBJ) $(EXECUTABLE)

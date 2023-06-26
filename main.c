@@ -102,10 +102,12 @@ int main(int argc, char *argv[])
 {
   //  pesquisa <método> <quantidade> <situação> <chave> [-P]
 
-  /* 1- método
+  /*
+     1 - método
      2 - quantidade
-     3 - chave
-     5 -
+     3 - situação
+     4 - chave
+     5 - [-p] opcional para printar todo o arquivo
   */
   clock_t startClock = clock();
   if (argc < 5)
@@ -130,7 +132,7 @@ int main(int argc, char *argv[])
 
   if (!file)
   {
-    printf("[FAIl] Erro ao abrir o arquivo de dados.");
+    printf("[FAIL] Erro ao abrir o arquivo de dados.");
     return EXIT_FAILURE;
   }
 
@@ -139,12 +141,18 @@ int main(int argc, char *argv[])
   case INDEX:
     indexSearch(file, input);
     break;
+
   case BINARY_TREE:
     binaryTree(input.key, file);
     break;
+
   case B_TREE:
     bTree(input.key, file);
     break;
+
+  default:
+    printf("[FAIL] Método de pesquisa inválido.");
+    return EXIT_FAILURE;
   }
 
   if (argc > 5 && strcmp(argv[5], "-p\n"))
