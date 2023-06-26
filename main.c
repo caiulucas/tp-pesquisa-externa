@@ -4,7 +4,6 @@
 #include <time.h>
 #include "fileHandler.h"
 #include "indexed.h"
-#include "indexesTable.h"
 #include "consts.h"
 #include "b_tree.h"
 #include "binary_tree.h"
@@ -15,24 +14,23 @@ bool indexSearch(FILE *file, Input input)
   size_t indexesSz = (sizeof(Index) * input.quantity) / PAGE_ITEMS;
   Index *indexes = malloc(indexesSz);
 
-  int pos = readIndexesTable(indexes);
-  if (pos == -1)
-  {
-    pos = createIndexesTable(indexes, file);
-    pos = readIndexesTable(indexes);
-  }
+  int reads = 0;
+
+  createIndexesTable(indexes, file);
 
   Data item;
   fflush(stdout);
   item.key = input.key;
 
-  if (indexedSearch(indexes, pos, &item, file, input.situation))
+  if (indexedSearch(&item, file, input.situation, &reads))
   {
     printf("[INFO] Item encontrado.\n");
+    printf("[INFO] %d leituras realizadas.\n", reads);
     printData(item);
     return true;
   }
 
+  printf("[INFO] %d leituras realizadas.\n", reads);
   printf("Item não encontrado\n");
   free(indexes);
   return false;

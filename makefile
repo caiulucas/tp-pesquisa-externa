@@ -1,7 +1,7 @@
 CC := gcc
 CFLAGS := -c -Wall
 
-SRC := main.c indexed.c indexesTable.c fileHandler.c b_tree.c b_star_tree.c utils.c binary_tree.c
+SRC := main.c indexed.c fileHandler.c b_tree.c b_star_tree.c utils.c binary_tree.c
 OBJ := $(SRC:.c=.o)
 EXECUTABLE := exe
 

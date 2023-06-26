@@ -2,24 +2,44 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "indexed.h"
+#include "utils.h"
 
-bool indexedSearch(Index indexes[], int size, Data *item, FILE *file, Situation situation)
+bool indexedSearch(Data *item, FILE *file, Situation situation, int *reads)
 {
+  FILE *indexesFile = fopen(INDEXES_FILE, "rb");
+
+  if (!indexesFile)
+    return false;
+
+  fseek(indexesFile, 0, SEEK_END);
+
+  size_t size = ftell(indexesFile) / sizeof(Index);
+  rewind(indexesFile);
+
   Data page[PAGE_ITEMS];
 
   // Procura pela página onde o item pode estar
   int i = 0;
 
+  Index index;
+  fread(&index, sizeof(Index), 1, indexesFile);
+  *reads += 1;
+
+  // bool findIndexCondition = situation == ASC ?  : i < size && index.key > item->key;
+
   if (situation == ASC)
   {
-    while (i < size && indexes[i].key < item->key)
+    while (i < size && index.key < item->key && !feof(indexesFile))
+    {
+      fread(&index, sizeof(Index), 1, indexesFile);
+      *reads += 1;
       i++;
+    }
   }
-  else
-  {
-    while (i < size && indexes[i].key > item->key)
-      i++;
-  }
+
+  fseek(indexesFile, -sizeof(Index) * 2, SEEK_CUR);
+  fread(&index, sizeof(Index), 1, indexesFile);
+  *reads += 1;
 
   // Caso a chave desejada seja menor que a primeira chave, o item não existe
   if (i == 0)
@@ -28,9 +48,10 @@ bool indexedSearch(Index indexes[], int size, Data *item, FILE *file, Situation 
   size_t pageLength = PAGE_ITEMS;
 
   // Lê a página do arquivo
-  size_t displacement = (indexes[i - 1].pos - 1) * PAGE_ITEMS * sizeof(Data);
+  size_t displacement = (index.pos - 1) * PAGE_ITEMS * sizeof(Data);
   fseek(file, displacement, SEEK_SET);
   fread(&page, sizeof(Data), pageLength, file);
+  *reads += 1;
 
   // Pesquisa sequencial na página lida
   for (i = 0; i < pageLength; i++)
@@ -45,4 +66,67 @@ bool indexedSearch(Index indexes[], int size, Data *item, FILE *file, Situation 
 
   rewind(file);
   return false;
+}
+
+int readIndexesTable(Index *indexes, int *reads)
+{
+  FILE *file = fopen(INDEXES_FILE, "rb");
+
+  if (file == NULL)
+  {
+    printf("Tabela de indices não encontrada!\n");
+    return -1;
+  }
+
+  int pos = 0;
+  while (fread(&indexes[pos], sizeof(Index), 1, file) == 1)
+  {
+    *reads += 1;
+    pos++;
+  }
+
+  printf("Tabela de índices encontrada!!\n");
+  fclose(file);
+  return pos;
+}
+
+int createIndexesTable(Index *indexes, FILE *dataFile)
+{
+  FILE *file = fopen(INDEXES_FILE, "wb");
+
+  if (file == NULL)
+  {
+    printf("[-] Erro ao abrir o arquivo\n");
+    return 0;
+  }
+
+  Data item;
+
+  // int count = 0;
+  int pos = 0;
+
+  while (fread(&item, sizeof(Data), 1, dataFile) == 1)
+  {
+    indexes[pos].key = item.key;
+    indexes[pos].pos = pos + 1;
+    fwrite(&indexes[pos], sizeof(Index), 1, file);
+    pos++;
+    fseek(dataFile, sizeof(Data) * (PAGE_ITEMS - 1), SEEK_CUR);
+
+    clear();
+    printf("[+] %d índices criados.\n", pos);
+  }
+
+  printf("[+] Tabela de índices criada com sucesso!\n");
+  fclose(file);
+  rewind(dataFile);
+  return pos;
+}
+
+void printIndexedTable(Index *indexes, size_t quantity)
+{
+  for (size_t i = 0; i < quantity; i++)
+  {
+    printf("Key -> %d | Pos -> %d\n", indexes[i].key, indexes[i].pos);
+  }
 }
