@@ -9,6 +9,20 @@
 #define B_TREE_FILE "data/b_tree.bin"
 #define MM2 4
 
+typedef enum Method
+{
+  INDEX = 1,
+  BINARY_TREE = 2,
+  B_TREE = 3
+} Method;
+
+typedef enum Situation
+{
+  ASC = 1,
+  DESC = 2,
+  RANDOM = 3
+} Situation;
+
 typedef struct
 {
   int key;
@@ -25,8 +39,8 @@ typedef struct
 
 typedef struct
 {
-  int method;
   int key;
   int quantity;
-  int situation;
+  Method method;
+  Situation situation;
 } Input;

@@ -3,25 +3,29 @@
 #include <stdbool.h>
 #include "indexed.h"
 
-bool indexedSearch(Index indexes[], int size, Data *item, FILE *file)
+bool indexedSearch(Index indexes[], int size, Data *item, FILE *file, Situation situation)
 {
   Data page[PAGE_ITEMS];
 
   // Procura pela página onde o item pode estar
   int i = 0;
-  while (i < size && indexes[i].key <= item->key)
-    i++;
+
+  if (situation == ASC)
+  {
+    while (i < size && indexes[i].key < item->key)
+      i++;
+  }
+  else
+  {
+    while (i < size && indexes[i].key > item->key)
+      i++;
+  }
 
   // Caso a chave desejada seja menor que a primeira chave, o item não existe
   if (i == 0)
     return false;
 
   size_t pageLength = PAGE_ITEMS;
-  // A última página não deve ser completa
-  // if (i == size) {
-  //   fseek(file, 0, SEEK_END);
-  //   pageLength = (ftell(file) / sizeof(Data)) % PAGE_ITEMS;
-  // }
 
   // Lê a página do arquivo
   size_t displacement = (indexes[i - 1].pos - 1) * PAGE_ITEMS * sizeof(Data);
@@ -33,10 +37,12 @@ bool indexedSearch(Index indexes[], int size, Data *item, FILE *file)
   {
     if (page[i].key == item->key)
     {
+      rewind(file);
       *item = page[i];
       return true;
     }
   }
 
+  rewind(file);
   return false;
 }

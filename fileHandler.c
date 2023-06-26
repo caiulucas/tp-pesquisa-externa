@@ -25,7 +25,63 @@ void generateRandomData(Data *data, int key)
   data->data3[49] = '\0';
 }
 
-void generateBinaryFile(int numRecords)
+void generateAsc(Data *data, int length, FILE *file)
+{
+  for (int i = 0; i < length; i++)
+  {
+    clear();
+    printf("[+] %d de %d dados gerados.\n", i + 1, length);
+
+    generateRandomData(data, i);
+    fwrite(data, sizeof(Data), 1, file);
+  }
+}
+
+void generateDesc(Data *data, int length, FILE *file)
+{
+  for (int i = length - 1; i >= 0; i--)
+  {
+    clear();
+    printf("[+] %d de %d dados gerados.\n", length - i, length);
+
+    generateRandomData(data, i);
+    fwrite(data, sizeof(Data), 1, file);
+  }
+}
+
+void generateRandom(Data *data, int length, FILE *file)
+{
+  int *indices = (int *)malloc(length * sizeof(int)); // Array to store the indices
+
+  // Initialize the indices array with values from 0 to length - 1
+  for (int i = 0; i < length; i++)
+  {
+    indices[i] = i;
+  }
+
+  // Shuffle the indices array using Fisher-Yates algorithm
+  for (int i = length - 1; i > 0; i--)
+  {
+    int j = rand() % (i + 1);
+    int temp = indices[i];
+    indices[i] = indices[j];
+    indices[j] = temp;
+  }
+
+  for (int i = 0; i < length; i++)
+  {
+    int index = indices[i]; // Get the shuffled index
+    clear();
+    printf("[+] %d de %d dados gerados.\n", i + 1, length);
+
+    generateRandomData(data, index);
+    fwrite(data, sizeof(Data), 1, file);
+  }
+
+  free(indices);
+}
+
+void generateBinaryFile(int numRecords, Situation situation)
 {
   Data data;
   FILE *file = fopen(DATA_FILE, "wb");
@@ -39,15 +95,21 @@ void generateBinaryFile(int numRecords)
   srand(time(NULL));
   const clock_t startClock = clock();
 
-  for (int i = 0; i < numRecords; i++)
+  switch (situation)
   {
-    clear();
-    printf("[+] %d de %d dados gerados.\n", i + 1, numRecords);
-
-    generateRandomData(&data, i);
-    fwrite(&data, sizeof(Data), 1, file);
+  case ASC:
+    generateAsc(&data, numRecords, file);
+    break;
+  case DESC:
+    generateDesc(&data, numRecords, file);
+    break;
+  case RANDOM:
+    generateRandom(&data, numRecords, file);
+    break;
+  default:
+    break;
   }
-  
+
   const clock_t endClock = clock();
 
   const double creationTime = ((double)(endClock - startClock)) / CLOCKS_PER_SEC;
@@ -57,7 +119,7 @@ void generateBinaryFile(int numRecords)
 
 void printBinaryFile(FILE *file)
 {
-  
+
   Data data;
   while (fread(&data, sizeof(Data), 1, file) == 1)
   {

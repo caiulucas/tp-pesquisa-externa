@@ -10,7 +10,6 @@
 #include "binary_tree.h"
 #include "utils.h"
 
-
 bool indexSearch(FILE *file, Input input)
 {
   size_t indexesSz = (sizeof(Index) * input.quantity) / PAGE_ITEMS;
@@ -27,7 +26,7 @@ bool indexSearch(FILE *file, Input input)
   fflush(stdout);
   item.key = input.key;
 
-  if (indexedSearch(indexes, pos, &item, file))
+  if (indexedSearch(indexes, pos, &item, file, input.situation))
   {
     printf("[INFO] Item encontrado.\n");
     printData(item);
@@ -111,7 +110,7 @@ int main(int argc, char *argv[])
      5 -
   */
   clock_t startClock = clock();
-  if (argc < 4)
+  if (argc < 5)
   {
     printf("[-] Número de argumentos inválidos.\n");
     return EXIT_FAILURE;
@@ -120,13 +119,14 @@ int main(int argc, char *argv[])
   Input input;
   input.method = atoi(argv[1]);
   input.quantity = atoi(argv[2]);
-  input.key = atoi(argv[3]);
+  input.situation = atoi(argv[3]);
+  input.key = atoi(argv[4]);
 
   FILE *file = fopen(DATA_FILE, "rb");
   if (!file)
   {
     printf("[FAIL] Arquivo de dados não encontrado.\n");
-    generateBinaryFile(input.quantity);
+    generateBinaryFile(input.quantity, input.situation);
     file = fopen(DATA_FILE, "rb");
   }
 
@@ -136,26 +136,23 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  if (argc > 4 && strcmp(argv[4], "-p\n"))
-    printBinaryFile(file);
-
-  printf("%d %d\n", input.method, input.key);
-
   switch (input.method)
   {
-  case 1:
-    if (!indexSearch(file, input))
-      return EXIT_FAILURE;
+  case INDEX:
+    indexSearch(file, input);
     break;
-  case 2:
-    if (!binaryTree(input.key, file))
-      return EXIT_FAILURE;
+  case BINARY_TREE:
+    binaryTree(input.key, file);
     break;
-  case 3:
-    if (!bTree(input.key, file))
-      return EXIT_FAILURE;
+  case B_TREE:
+    bTree(input.key, file);
     break;
   }
+
+  if (argc > 5 && strcmp(argv[5], "-p\n"))
+    printBinaryFile(file);
+
+  fclose(file);
   clock_t endClock = clock();
   double executionType = (double)(endClock - startClock) / CLOCKS_PER_SEC;
 

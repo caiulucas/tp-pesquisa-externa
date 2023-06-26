@@ -24,7 +24,7 @@ bool insertBinaryTree(Node **root, Index index)
   while (*aux != NULL)
   {
     if (index.key < (*aux)->index.key)
-      aux = &((*aux)->leftNode);
+      aux = &((*aux)->leftNode);  
     else if (index.key > (*aux)->index.key)
       aux = &((*aux)->rightNode);
     else
@@ -65,7 +65,6 @@ int binarySearch(Data data[PAGE_ITEMS], int key)
 bool findBinaryTree(Node *root, int key, Index *index)
 {
   Node *aux = root;
-
   while (aux)
   {
     if (key == aux->index.key)
@@ -94,7 +93,7 @@ bool searchBinaryTree(Node *root, Data *item, FILE *dataFile)
 
   Data dataList[PAGE_ITEMS];
 
-  size_t displacement = (index.pos - 1) * PAGE_ITEMS * sizeof(Data);;
+  size_t displacement = (index.pos - 1) * PAGE_ITEMS * sizeof(Data);
   fseek(dataFile, displacement, SEEK_SET);
 
   fread(dataList, sizeof(Data), PAGE_ITEMS, dataFile);
