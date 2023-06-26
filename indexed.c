@@ -19,25 +19,27 @@ bool indexedSearch(Data *item, FILE *file, Situation situation, int *reads)
   Data page[PAGE_ITEMS];
 
   // Procura pela página onde o item pode estar
-  int i = 0;
 
   Index index;
   fread(&index, sizeof(Index), 1, indexesFile);
   *reads += 1;
 
-  // bool findIndexCondition = situation == ASC ?  : i < size && index.key > item->key;
-
-  if (situation == ASC)
+  int i;
+  for (i = 0; i < size; i++)
   {
-    while (i < size && index.key < item->key && !feof(indexesFile))
-    {
-      fread(&index, sizeof(Index), 1, indexesFile);
-      *reads += 1;
-      i++;
+    if (feof(indexesFile))
+      break;
+
+    if ((situation == ASC && index.key >= item->key) || (situation == DESC && index.key <= item->key)){
+      fseek(indexesFile, -sizeof(Index), SEEK_CUR);
+      break;
     }
+
+    fread(&index, sizeof(Index), 1, indexesFile);
+    *reads += 1;
   }
 
-  fseek(indexesFile, -sizeof(Index) * 2, SEEK_CUR);
+  fseek(indexesFile, -sizeof(Index), SEEK_CUR);
   fread(&index, sizeof(Index), 1, indexesFile);
   *reads += 1;
 

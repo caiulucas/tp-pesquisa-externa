@@ -16,7 +16,7 @@ bool indexSearch(FILE *file, Input input)
 
   int reads = 0;
 
-  createIndexesTable(indexes, file);
+  // createIndexesTable(indexes, file);
 
   Data item;
   fflush(stdout);

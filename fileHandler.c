@@ -15,14 +15,14 @@ void generateRandomData(Data *data, int key)
   {
     data->data2[i] = 'A' + rand() % 26;
   }
-  data->data2[9] = '\0';
+  data->data2[DATA2_SIZE - 1] = '\0';
 
   // Generate random values for data3
   for (int i = 0; i < DATA3_SIZE; i++)
   {
     data->data3[i] = 'a' + rand() % 26;
   }
-  data->data3[49] = '\0';
+  data->data3[DATA3_SIZE - 1] = '\0';
 }
 
 void generateAsc(Data *data, int length, FILE *file)
