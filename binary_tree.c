@@ -59,8 +59,19 @@ Node *createNode(Data data, size_t pos)
         continue;
       }
 
+<<<<<<< HEAD
       aux.leftNode = pos;
       fseek(binaryTreeFile, -sizeof(Node), SEEK_CUR);
+=======
+    if (index.key < aux->index.key)
+    {
+      aux->leftNode = aux->pos;
+      displacement = (size_t)(aux->leftNode) * PAGE_ITEMS * sizeof(Data);
+    }
+    else if (index.key > aux->index.key) {
+      aux->rightNode = aux->pos;
+      displacement = (size_t)(aux->rightNode) * PAGE_ITEMS * sizeof(Data);
+>>>>>>> c1b13e5 (feat: add pos to node)
     }
     else
     {
