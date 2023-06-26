@@ -32,9 +32,14 @@ bool insertBinaryTree(Index index)
     size_t displacement;
 
     if (index.key < aux->index.key)
+    {
+      aux->leftNode = aux->pos;
       displacement = (size_t)(aux->leftNode) * PAGE_ITEMS * sizeof(Data);
-    else if (index.key > aux->index.key)
+    }
+    else if (index.key > aux->index.key) {
+      aux->rightNode = aux->pos;
       displacement = (size_t)(aux->rightNode) * PAGE_ITEMS * sizeof(Data);
+    }
     else
       return false;
 
