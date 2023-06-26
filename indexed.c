@@ -21,8 +21,11 @@ bool indexedSearch(Data *item, FILE *file, Situation situation, Quantifier *quan
   // Procura pela página onde o item pode estar
 
   Index index;
+<<<<<<< HEAD
   fread(&index, sizeof(Index), 1, indexesFile);
   quantifier->reads += 1;
+=======
+>>>>>>> d187e0d (feat: new branch)
 
   int i;
   for (i = 0; i < size; i++)

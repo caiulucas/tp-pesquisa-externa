@@ -164,6 +164,7 @@ void createBinaryTree(FILE *dataFile)
 
 void createBinaryTree()
 {
+<<<<<<< HEAD
   FILE *dataFile = fopen(DATA_FILE, "rb");
 
   if (!dataFile)
@@ -206,4 +207,12 @@ bool runBinaryTree(Input input, FILE *dataFile)
   printf("[INFO] %d comparações realizadas.\n", quantifier.comparisons);
   printf("[FAIL] Item não encontrado!\n");
   return false;
+=======
+  FILE *indexesFile = fopen(INDEXES_FILE, "rb");
+
+  Index index;
+
+  while (fread(&index, sizeof(Index), 1, indexesFile) == 1)
+    insertBinaryTree(index);
+>>>>>>> d187e0d (feat: new branch)
 }
