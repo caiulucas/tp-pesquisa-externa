@@ -21,8 +21,6 @@ bool indexedSearch(Data *item, FILE *file, Situation situation, int *reads)
   // Procura pela página onde o item pode estar
 
   Index index;
-  fread(&index, sizeof(Index), 1, indexesFile);
-  *reads += 1;
 
   int i;
   for (i = 0; i < size; i++)
