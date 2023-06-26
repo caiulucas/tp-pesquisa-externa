@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "fileHandler.h"
+#include "file_handler.h"
 #include "indexed.h"
 #include "consts.h"
 #include "b_tree.h"
@@ -16,7 +16,7 @@ bool indexSearch(FILE *file, Input input)
 
   int reads = 0;
 
-  // createIndexesTable(indexes, file);
+  createIndexesTable(indexes, file);
 
   Data item;
   fflush(stdout);
@@ -72,28 +72,25 @@ bool bTree(int key, FILE *file)
 
 bool binaryTree(int key, FILE *dataFile)
 {
-  Index index;
-
   Node *root;
   startBinaryTree(&root);
 
-  FILE *indexesFile = fopen(INDEXES_FILE, "rb");
+  int reads = 0;
 
-  while (fread(&index, sizeof(Index), 1, indexesFile) == 1)
-  {
-    insertBinaryTree(&root, index);
-  }
-
+  createBinaryTree();
   Data item;
+
   item.key = key;
 
-  if (searchBinaryTree(root, &item, dataFile))
+  if (searchBinaryTree(root, &item, dataFile, &reads))
   {
     printf("[+] Item encontrado!\n");
+    printf("[+] %d leituras realizadas.\n", reads);
     printData(item);
     return true;
   }
 
+  printf("[+] %d leituras realizadas.\n", reads);
   printf("[+] Item não encontrado!\n");
   return false;
 }

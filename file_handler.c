@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "fileHandler.h"
+#include "file_handler.h"
 #include "utils.h"
 
 void generateRandomData(Data *data, int key)

@@ -4,13 +4,15 @@
 typedef struct Node
 {
   Index index;
-  struct Node *leftNode;
-  struct Node *rightNode;
+  int leftNode;
+  int rightNode;
+  int pos;
 } Node;
 
-typedef Node * BinaryTree;
+typedef Node *BinaryTree;
 
 void startBinaryTree(Node **root);
-bool insertBinaryTree(Node **root, Index index);
+bool insertBinaryTree(Index index);
 void printBinaryTree(Node *root);
-bool searchBinaryTree(Node *root, Data *item, FILE *dataFile);
+void createBinaryTree();
+bool searchBinaryTree(Node *root, Data *item, FILE *dataFile, int *reads);

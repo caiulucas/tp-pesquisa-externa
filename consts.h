@@ -7,6 +7,7 @@
 #define DATA_FILE "data/data.bin"
 #define INDEXES_FILE "data/indexes.bin"
 #define B_TREE_FILE "data/b_tree.bin"
+#define BINARY_TREE_FILE "data/binary_tree.bin"
 #define MM2 4
 
 typedef enum Method
