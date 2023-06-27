@@ -14,5 +14,5 @@ typedef struct Node
 void startBinaryTree(Node **root);
 void printBinaryTree();
 void createBinaryTree(FILE *file);
-bool findBinaryTree(Data *data, FILE *dataFile, int *reads);
+bool findBinaryTree(Data *data, FILE *dataFile, Quantifier *quantifier);
 bool runBinaryTree(Input input, FILE *dataFile);

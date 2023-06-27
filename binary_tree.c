@@ -93,7 +93,7 @@ bool insertBinaryTree(Data data, FILE *binaryTreeFile)
   return true;
 }
 
-bool findBinaryTree(Data *data, FILE *dataFile, int *reads)
+bool findBinaryTree(Data *data, FILE *dataFile, Quantifier *quantifier)
 {
   FILE *binaryTreeFile = fopen(BINARY_TREE_FILE, "rb");
 
@@ -107,7 +107,8 @@ bool findBinaryTree(Data *data, FILE *dataFile, int *reads)
     {
       fseek(dataFile, aux.pos * sizeof(Data), SEEK_SET);
       fread(data, sizeof(Data), 1, dataFile);
-      *reads += 1;
+      quantifier->reads += 1;
+      quantifier->comparisons += 1;
 
       rewind(dataFile);
       fclose(binaryTreeFile);
@@ -115,13 +116,16 @@ bool findBinaryTree(Data *data, FILE *dataFile, int *reads)
     }
 
     size_t displacement;
+
+    quantifier->comparisons += 1;
     if (data->key > aux.key)
       displacement = (size_t)(aux.rightNode) * sizeof(Node);
     else
       displacement = (size_t)(aux.leftNode) * sizeof(Node);
 
     fseek(binaryTreeFile, displacement, SEEK_SET);
-    *reads += 1;
+    quantifier->reads += 1;
+    
   }
 
   rewind(dataFile);
@@ -172,21 +176,25 @@ void printBinaryTree()
 
 bool runBinaryTree(Input input, FILE *dataFile)
 {
-  int reads = 0;
+  Quantifier quantifier;
+  quantifier.reads = 0;
+  quantifier.comparisons = 0;
 
   Data item;
 
   item.key = input.key;
 
-  if (findBinaryTree(&item, dataFile, &reads))
+  if (findBinaryTree(&item, dataFile, &quantifier))
   {
-    printf("[+] Item encontrado!\n");
-    printf("[+] %d leituras realizadas.\n", reads);
+    printf("[SUCCESS] Item encontrado!\n");
+    printf("[INFO] %d leituras realizadas.\n", quantifier.reads);
+    printf("[INFO] %d comparações realizadas.\n", quantifier.comparisons);
     printData(item);
     return true;
   }
 
-  printf("[+] %d leituras realizadas.\n", reads);
-  printf("[+] Item não encontrado!\n");
+  printf("[INFO] %d leituras realizadas.\n", quantifier.reads);
+  printf("[INFO] %d comparações realizadas.\n", quantifier.comparisons);
+  printf("[FAIL] Item não encontrado!\n");
   return false;
 }
