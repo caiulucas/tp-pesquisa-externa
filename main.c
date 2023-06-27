@@ -9,6 +9,30 @@
 #include "binary_tree.h"
 #include "utils.h"
 
+bool indexSearch(FILE *file, Input input)
+{
+  size_t indexesSz = (sizeof(Index) * input.quantity) / PAGE_ITEMS;
+  Index *indexes = malloc(indexesSz);
+
+  int reads = 0;
+
+  Data item;
+  item.key = input.key;
+
+  if (indexedSearch(&item, file, input.situation, &reads))
+  {
+    printf("[INFO] Item encontrado.\n");
+    printf("[INFO] %d leituras realizadas.\n", reads);
+    printData(item);
+    return true;
+  }
+
+  printf("[INFO] %d leituras realizadas.\n", reads);
+  printf("Item não encontrado\n");
+  free(indexes);
+  return false;
+}
+
 bool bTree(int key, FILE *file)
 {
   // Lê a página do arquivo
@@ -43,43 +67,17 @@ bool bTree(int key, FILE *file)
   return false;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-bool binaryTree(Input input, FILE *dataFile)
-{
-  int reads = 0;
-
-  Data item;
-
-  item.key = input.key;
-
-  if (findBinaryTree(&item, dataFile, &reads))
-  {
-    printf("[+] Item encontrado!\n");
-    printf("[+] %d leituras realizadas.\n", reads);
-    printData(item);
-    return true;
-  }
-
-  printf("[+] %d leituras realizadas.\n", reads);
-  printf("[+] Item não encontrado!\n");
-  return false;
-}
-
->>>>>>> 012ec88 (feat: another type of tree)
-=======
->>>>>>> 54ee3d0 (add reads)
 int main(int argc, char *argv[])
 {
   //  pesquisa <método> <quantidade> <situação> <chave> [-P]
 
-  /* 1- método
+  /*
+     1 - método
      2 - quantidade
-     3 - chave
-     5 -
+     3 - situação
+     4 - chave
+     5 - [-p] opcional para printar todo o arquivo
   */
-
   clock_t startClock = clock();
   if (argc < 5)
   {
@@ -103,29 +101,27 @@ int main(int argc, char *argv[])
 
   if (!file)
   {
-    printf("[FAIl] Erro ao abrir o arquivo de dados.");
+    printf("[FAIL] Erro ao abrir o arquivo de dados.");
     return EXIT_FAILURE;
   }
 
   switch (input.method)
   {
   case INDEX:
-    runIndexedSearch(file, input);
+    indexSearch(file, input);
     break;
+
   case BINARY_TREE:
-<<<<<<< HEAD
-<<<<<<< HEAD
     runBinaryTree(input, file);
-=======
-    binaryTree(input, file);
->>>>>>> 012ec88 (feat: another type of tree)
-=======
-    runBinaryTree(input, file);
->>>>>>> 54ee3d0 (add reads)
     break;
+
   case B_TREE:
     bTree(input.key, file);
     break;
+
+  default:
+    printf("[FAIL] Método de pesquisa inválido.");
+    return EXIT_FAILURE;
   }
 
   if (argc > 5 && !strcmp(argv[5], "-p"))
