@@ -46,8 +46,6 @@ bool indexedSearch(Data *item, FILE *file, Situation situation, Quantifier *quan
   quantifier->reads += 1;
 
   // Caso a chave desejada seja menor que a primeira chave, o item não existe
-  if (i == 0)
-    return false;
 
   size_t pageLength = PAGE_ITEMS;
 
