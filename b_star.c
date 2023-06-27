@@ -35,7 +35,7 @@ void InitializeBStar(PointerType *root)
 }
 
 bool CreateBStar(FILE *binaryFile, int length, PointerType *bStarTree, Quantifier *quantifier)
-{''
+{
   InitializeBStar(bStarTree);
 
   // Read the base binary file and insert the datas into the B* Tree
