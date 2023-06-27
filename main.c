@@ -67,6 +67,32 @@ bool bTree(int key, FILE *file)
   return false;
 }
 
+<<<<<<< HEAD
+=======
+bool binaryTree(Input input, FILE *dataFile)
+{
+  int reads = 0;
+
+  // printBinaryTree();
+  Data item;
+
+  item.key = input.key;
+  printBinaryTree();
+
+  if (searchBinaryTree(&item, dataFile, input.situation, &reads))
+  {
+    printf("[+] Item encontrado!\n");
+    printf("[+] %d leituras realizadas.\n", reads);
+    printData(item);
+    return true;
+  }
+
+  printf("[+] %d leituras realizadas.\n", reads);
+  printf("[+] Item não encontrado!\n");
+  return false;
+}
+
+>>>>>>> 012ec88 (feat: another type of tree)
 int main(int argc, char *argv[])
 {
   //  pesquisa <método> <quantidade> <situação> <chave> [-P]
@@ -112,7 +138,11 @@ int main(int argc, char *argv[])
     break;
 
   case BINARY_TREE:
+<<<<<<< HEAD
     runBinaryTree(input, file);
+=======
+    binaryTree(input, file);
+>>>>>>> 012ec88 (feat: another type of tree)
     break;
 
   case B_TREE:
