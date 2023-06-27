@@ -45,3 +45,9 @@ typedef struct
   Method method;
   Situation situation;
 } Input;
+
+typedef struct
+{
+  int reads;
+  int comparisons;
+} Quantifier;

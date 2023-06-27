@@ -103,7 +103,7 @@ void printBinaryTree()
   }
 }
 
-bool findBinaryTree(Data *data, FILE *dataFile, int *reads)
+bool findBinaryTree(Data *data, FILE *dataFile, Quantifier *quantifier)
 {
   FILE *binaryTreeFile = fopen(BINARY_TREE_FILE, "rb");
 
@@ -127,7 +127,8 @@ bool findBinaryTree(Data *data, FILE *dataFile, int *reads)
       displacement = (size_t)(aux.leftNode) * PAGE_ITEMS * sizeof(Data);
 
     fseek(binaryTreeFile, displacement, SEEK_SET);
-    *reads += 1;
+    quantifier->reads += 1;
+    
   }
 
   rewind(dataFile);
@@ -184,21 +185,25 @@ void createBinaryTree()
 
 bool runBinaryTree(Input input, FILE *dataFile)
 {
-  int reads = 0;
+  Quantifier quantifier;
+  quantifier.reads = 0;
+  quantifier.comparisons = 0;
 
   Data item;
 
   item.key = input.key;
 
-  if (findBinaryTree(&item, dataFile, &reads))
+  if (findBinaryTree(&item, dataFile, &quantifier))
   {
-    printf("[+] Item encontrado!\n");
-    printf("[+] %d leituras realizadas.\n", reads);
+    printf("[SUCCESS] Item encontrado!\n");
+    printf("[INFO] %d leituras realizadas.\n", quantifier.reads);
+    printf("[INFO] %d comparações realizadas.\n", quantifier.comparisons);
     printData(item);
     return true;
   }
 
-  printf("[+] %d leituras realizadas.\n", reads);
-  printf("[+] Item não encontrado!\n");
+  printf("[INFO] %d leituras realizadas.\n", quantifier.reads);
+  printf("[INFO] %d comparações realizadas.\n", quantifier.comparisons);
+  printf("[FAIL] Item não encontrado!\n");
   return false;
 }
