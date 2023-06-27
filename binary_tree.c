@@ -9,16 +9,6 @@ void startBinaryTree(Node **root)
   *root = NULL;
 }
 
-// Node createNode(Data data, size_t pos, Node previousNode)
-// {
-//   Node aux;
-//   aux.index = index;
-//   aux.pos = pos;
-//   aux.leftNode = previousNode.leftNode;
-//   aux.rightNode = previousNode.rightNode;
-//   return aux;
-// }
-
 Node *createNode(Data data, size_t pos)
 {
   Node *node = (Node *)malloc(sizeof(Node));
@@ -125,8 +115,7 @@ bool findBinaryTree(Data *data, FILE *dataFile, Quantifier *quantifier)
 
     fseek(binaryTreeFile, displacement, SEEK_SET);
     quantifier->reads += 1;
-    
-  }
+    }
 
   rewind(dataFile);
   fclose(binaryTreeFile);
