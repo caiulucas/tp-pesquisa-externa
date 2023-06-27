@@ -10,14 +10,14 @@ void generateRandomData(Data *data, int key)
   data->key = key;
   data->data1 = rand();
 
-  // Generate random values for data2
+  // Gera dados aleatórios para data2
   for (int i = 0; i < DATA2_SIZE; i++)
   {
     data->data2[i] = 'A' + rand() % 26;
   }
   data->data2[DATA2_SIZE - 1] = '\0';
 
-  // Generate random values for data3
+  // Gera dados aleatórios para data3
   for (int i = 0; i < DATA3_SIZE; i++)
   {
     data->data3[i] = 'a' + rand() % 26;
@@ -32,6 +32,7 @@ void generateAsc(Data *data, int length, FILE *file)
     clear();
     printf("[+] %d de %d dados gerados.\n", i + 1, length);
 
+    // Gera dados aleatórios e salva em arquivo
     generateRandomData(data, i);
     fwrite(data, sizeof(Data), 1, file);
   }
@@ -44,6 +45,7 @@ void generateDesc(Data *data, int length, FILE *file)
     clear();
     printf("[+] %d de %d dados gerados.\n", length - i, length);
 
+    // Gera dados aleatórios e salva em arquivo
     generateRandomData(data, i);
     fwrite(data, sizeof(Data), 1, file);
   }
@@ -51,15 +53,16 @@ void generateDesc(Data *data, int length, FILE *file)
 
 void generateRandom(Data *data, int length, FILE *file)
 {
-  int *indices = (int *)malloc(length * sizeof(int)); // Array to store the indices
+  // Armazena os índices
+  int *indices = (int *)malloc(length * sizeof(int)); 
 
-  // Initialize the indices array with values from 0 to length - 1
+  // Inicializa o array de índices
   for (int i = 0; i < length; i++)
   {
     indices[i] = i;
   }
 
-  // Shuffle the indices array using Fisher-Yates algorithm
+  // Embaralha os índices do array
   for (int i = length - 1; i > 0; i--)
   {
     int j = rand() % (i + 1);
@@ -70,7 +73,8 @@ void generateRandom(Data *data, int length, FILE *file)
 
   for (int i = 0; i < length; i++)
   {
-    int index = indices[i]; // Get the shuffled index
+    // Pega a posição embaralhada e gera os dados
+    int index = indices[i];
     clear();
     printf("[+] %d de %d dados gerados.\n", i + 1, length);
 
@@ -93,8 +97,10 @@ void generateBinaryFile(int numRecords, Situation situation)
   }
 
   srand(time(NULL));
+  // Marca o tempo de execução
   const clock_t startClock = clock();
 
+  // Gera os dados de acordo com a situação
   switch (situation)
   {
   case ASC:
@@ -112,6 +118,7 @@ void generateBinaryFile(int numRecords, Situation situation)
 
   const clock_t endClock = clock();
 
+  // Calcula o tempo de execução
   const double creationTime = ((double)(endClock - startClock)) / CLOCKS_PER_SEC;
   printf("[+] Arquivo de dados criado com sucesso em %lf segundos!\n", creationTime);
   fclose(file);
@@ -119,11 +126,10 @@ void generateBinaryFile(int numRecords, Situation situation)
 
 void printBinaryFile(FILE *file)
 {
-
   Data data;
   while (fread(&data, sizeof(Data), 1, file) == 1)
   {
     printf("key: %d - data1: %ld - data2: %s - data3: %s\n", data.key, data.data1, data.data2, data.data3);
   }
-  fseek(file, 0, SEEK_SET);
+  rewind(file);
 }
