@@ -15,3 +15,4 @@ void startBinaryTree(Node **root);
 void printBinaryTree();
 void createBinaryTree(FILE *file);
 bool findBinaryTree(Data *data, FILE *dataFile, int *reads);
+bool runBinaryTree(Input input, FILE *dataFile);

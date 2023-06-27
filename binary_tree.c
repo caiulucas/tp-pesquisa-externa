@@ -93,33 +93,6 @@ bool insertBinaryTree(Data data, FILE *binaryTreeFile)
   return true;
 }
 
-int binarySearch(Data data[PAGE_ITEMS], int key)
-{
-  int left = 0;
-  int right = PAGE_ITEMS - 1;
-  int middle = (left + right) / 2;
-
-  while (left <= right)
-  {
-    if (data[middle].key == key)
-    {
-      return middle;
-    }
-    else if (data[middle].key < key)
-    {
-      left = middle + 1;
-    }
-    else
-    {
-      right = middle - 1;
-    }
-
-    middle = (left + right) / 2;
-  }
-
-  return -1;
-}
-
 bool findBinaryTree(Data *data, FILE *dataFile, int *reads)
 {
   FILE *binaryTreeFile = fopen(BINARY_TREE_FILE, "rb");
@@ -134,6 +107,8 @@ bool findBinaryTree(Data *data, FILE *dataFile, int *reads)
     {
       fseek(dataFile, aux.pos * sizeof(Data), SEEK_SET);
       fread(data, sizeof(Data), 1, dataFile);
+      *reads += 1;
+
       rewind(dataFile);
       fclose(binaryTreeFile);
       return true;
@@ -146,6 +121,7 @@ bool findBinaryTree(Data *data, FILE *dataFile, int *reads)
       displacement = (size_t)(aux.leftNode) * sizeof(Node);
 
     fseek(binaryTreeFile, displacement, SEEK_SET);
+    *reads += 1;
   }
 
   rewind(dataFile);
@@ -192,4 +168,25 @@ void printBinaryTree()
   }
 
   fclose(binaryTreeFile);
+}
+
+bool runBinaryTree(Input input, FILE *dataFile)
+{
+  int reads = 0;
+
+  Data item;
+
+  item.key = input.key;
+
+  if (findBinaryTree(&item, dataFile, &reads))
+  {
+    printf("[+] Item encontrado!\n");
+    printf("[+] %d leituras realizadas.\n", reads);
+    printData(item);
+    return true;
+  }
+
+  printf("[+] %d leituras realizadas.\n", reads);
+  printf("[+] Item não encontrado!\n");
+  return false;
 }
