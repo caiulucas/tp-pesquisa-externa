@@ -4,7 +4,7 @@
 #include "indexed.h"
 #include "utils.h"
 
-bool indexedSearch(Data *item, FILE *file, Situation situation, int *reads)
+bool indexedSearch(Data *item, FILE *file, Situation situation, Quantifier *quantifier)
 {
   FILE *indexesFile = fopen(INDEXES_FILE, "rb");
 
@@ -12,8 +12,8 @@ bool indexedSearch(Data *item, FILE *file, Situation situation, int *reads)
     return false;
 
   fseek(indexesFile, 0, SEEK_END);
-
   size_t size = ftell(indexesFile) / sizeof(Index);
+
   rewind(indexesFile);
 
   Data page[PAGE_ITEMS];
@@ -21,6 +21,8 @@ bool indexedSearch(Data *item, FILE *file, Situation situation, int *reads)
   // Procura pela página onde o item pode estar
 
   Index index;
+  fread(&index, sizeof(Index), 1, indexesFile);
+  quantifier->reads += 1;
 
   int i;
   for (i = 0; i < size; i++)
@@ -28,30 +30,31 @@ bool indexedSearch(Data *item, FILE *file, Situation situation, int *reads)
     if (feof(indexesFile))
       break;
 
-    if ((situation == ASC && index.key >= item->key) || (situation == DESC && index.key <= item->key)){
+    quantifier->comparisons += 1;
+    if ((situation == ASC && index.key >= item->key) || (situation == DESC && index.key <= item->key))
+    {
       fseek(indexesFile, -sizeof(Index), SEEK_CUR);
       break;
     }
 
     fread(&index, sizeof(Index), 1, indexesFile);
-    *reads += 1;
+    quantifier->reads += 1;
   }
 
   fseek(indexesFile, -sizeof(Index), SEEK_CUR);
   fread(&index, sizeof(Index), 1, indexesFile);
-  *reads += 1;
+  quantifier->reads += 1;
 
   // Caso a chave desejada seja menor que a primeira chave, o item não existe
-  if (i == 0)
-    return false;
 
   size_t pageLength = PAGE_ITEMS;
 
   // Lê a página do arquivo
   size_t displacement = (index.pos - 1) * PAGE_ITEMS * sizeof(Data);
+
   fseek(file, displacement, SEEK_SET);
   fread(&page, sizeof(Data), pageLength, file);
-  *reads += 1;
+  quantifier->reads += 1;
 
   // Pesquisa sequencial na página lida
   for (i = 0; i < pageLength; i++)
@@ -66,28 +69,6 @@ bool indexedSearch(Data *item, FILE *file, Situation situation, int *reads)
 
   rewind(file);
   return false;
-}
-
-int readIndexesTable(Index *indexes, int *reads)
-{
-  FILE *file = fopen(INDEXES_FILE, "rb");
-
-  if (file == NULL)
-  {
-    printf("Tabela de indices não encontrada!\n");
-    return -1;
-  }
-
-  int pos = 0;
-  while (fread(&indexes[pos], sizeof(Index), 1, file) == 1)
-  {
-    *reads += 1;
-    pos++;
-  }
-
-  printf("Tabela de índices encontrada!!\n");
-  fclose(file);
-  return pos;
 }
 
 int createIndexesTable(Index *indexes, FILE *dataFile)
@@ -126,7 +107,31 @@ int createIndexesTable(Index *indexes, FILE *dataFile)
 void printIndexedTable(Index *indexes, size_t quantity)
 {
   for (size_t i = 0; i < quantity; i++)
-  {
     printf("Key -> %d | Pos -> %d\n", indexes[i].key, indexes[i].pos);
+}
+
+bool runIndexedSearch(FILE *file, Input input)
+{
+  size_t indexesSz = (sizeof(Index) * input.quantity) / PAGE_ITEMS;
+  Index *indexes = malloc(indexesSz);
+
+  Quantifier quantifier;
+
+  Data item;
+  item.key = input.key;
+
+  if (indexedSearch(&item, file, input.situation, &quantifier))
+  {
+    printf("[SUCCESS] Item encontrado.\n");
+    printf("[INFO] %d leituras realizadas.\n", quantifier.reads);
+    printf("[INFO] %d comparações realizadas.\n", quantifier.comparisons);
+    printData(item);
+    return true;
   }
+
+  printf("[INFO] %d leituras realizadas.\n", quantifier.reads);
+  printf("[INFO] %d comparações realizadas.\n", quantifier.comparisons);
+  printf("[FAIL] Item não encontrado\n");
+  free(indexes);
+  return false;
 }
