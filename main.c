@@ -71,13 +71,11 @@ bool binaryTree(Input input, FILE *dataFile)
 {
   int reads = 0;
 
-  // printBinaryTree();
   Data item;
 
   item.key = input.key;
-  printBinaryTree();
 
-  if (searchBinaryTree(&item, dataFile, input.situation, &reads))
+  if (findBinaryTree(&item, dataFile, &reads))
   {
     printf("[+] Item encontrado!\n");
     printf("[+] %d leituras realizadas.\n", reads);

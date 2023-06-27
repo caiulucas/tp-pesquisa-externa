@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "binary_tree.h"
+#include "utils.h"
 
 void startBinaryTree(Node **root)
 {
@@ -18,7 +19,7 @@ void startBinaryTree(Node **root)
 //   return aux;
 // }
 
-bool insertBinaryTree(Data data, FILE *binaryTreeFile)
+Node *createNode(Data data, size_t pos)
 {
   fseek(binaryTreeFile, 0, SEEK_END);
   size_t pos = ftell(binaryTreeFile) / sizeof(Node);
@@ -39,6 +40,14 @@ bool insertBinaryTree(Data data, FILE *binaryTreeFile)
   fseek(binaryTreeFile, 0, SEEK_END);
   size_t length = ftell(binaryTreeFile) / sizeof(Node);
   rewind(binaryTreeFile);
+
+  if (length == 0)
+  {
+    Node *newNode = createNode(data, length);
+    fwrite(newNode, sizeof(Node), 1, binaryTreeFile);
+    rewind(binaryTreeFile);
+    return true;
+  }
 
   while (fread(&aux, sizeof(Node), 1, binaryTreeFile) == 1)
   {
@@ -100,7 +109,7 @@ int binarySearch(Data data[PAGE_ITEMS], int key)
   int right = PAGE_ITEMS - 1;
   int middle = (left + right) / 2;
 
-  while (left <= right) 
+  while (left <= right)
   {
     if (data[middle].key == key)
     {
@@ -121,7 +130,7 @@ int binarySearch(Data data[PAGE_ITEMS], int key)
   return -1;
 }
 
-bool findBinaryTree(int key, Data *data, int *reads)
+bool findBinaryTree(Data *data, FILE *dataFile, int *reads)
 {
   FILE *binaryTreeFile = fopen(BINARY_TREE_FILE, "rb");
 
@@ -147,16 +156,15 @@ bool findBinaryTree(int key, Data *data, int *reads)
     fseek(binaryTreeFile, displacement, SEEK_SET);
   }
 
+  rewind(dataFile);
+  fclose(binaryTreeFile);
   return false;
 }
 
-bool searchBinaryTree(Data *item, FILE *dataFile, Situation situation, int *reads)
+void createBinaryTree(FILE *dataFile)
 {
-  int indexKey = (item->key / PAGE_ITEMS) * PAGE_ITEMS;
-  if (situation == DESC)
-    indexKey--;
-
   Data data;
+  FILE *binaryTreeFile = fopen(BINARY_TREE_FILE, "wb+");
 
   if (!findBinaryTree(indexKey, &data, reads))
     return false;

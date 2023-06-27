@@ -7,9 +7,8 @@ typedef struct Node
   Data data;
   int leftNode;
   int rightNode;
+  int pos;
 } Node;
-
-typedef Node *BinaryTree;
 
 void startBinaryTree(Node **root);
 void printBinaryTree();
