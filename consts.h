@@ -14,7 +14,8 @@ typedef enum Method
 {
   INDEX = 1,
   BINARY_TREE = 2,
-  B_TREE = 3
+  B_TREE = 3,
+  B_STAR = 4
 } Method;
 
 typedef enum Situation

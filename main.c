@@ -6,6 +6,7 @@
 #include "indexed.h"
 #include "consts.h"
 #include "b_tree.h"
+#include "b_star.h"
 #include "binary_tree.h"
 #include "utils.h"
 
@@ -57,8 +58,36 @@ int main(int argc, char *argv[])
   case B_TREE:
     runBTree(input.key, file);
     break;
-  }
+  case B_STAR:
+    PointerType bstar = NULL;
+    Data x;
+    x.key = input.key;
+    if (CreateBStar(file, &input, &bstar))
+      {
 
+        printf("[Iniciando pesquisa na árvore B*...]");
+
+        if (BStarSearch(&x, &bstar))
+        {
+          printf("Registro encontrado!");
+        }
+
+        else
+        {
+          printf("Registro não encontrado.");
+        }
+      }
+
+    else
+    {
+      printf("Falha na criação da árvore B*.");
+      return 0;
+    }
+    break;
+  default:
+    printf("[FAIL] Método inválido.\n");
+    return EXIT_FAILURE;
+  }
   if (argc > 5 && !strcmp(argv[5], "-p"))
     printBinaryFile(file);
 
