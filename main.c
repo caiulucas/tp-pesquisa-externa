@@ -62,21 +62,22 @@ int main(int argc, char *argv[])
     PointerType bstar = NULL;
     Data x;
     x.key = input.key;
-    if (CreateBStar(file, &input, &bstar))
+    Quantifier quantifier = {0, 0};
+    if (CreateBStar(file, input.quantity, &bstar, &quantifier))
+    {
+
+      printf("[Iniciando pesquisa na árvore B*...]");
+
+      if (BStarSearch(&x, &bstar))
       {
-
-        printf("[Iniciando pesquisa na árvore B*...]");
-
-        if (BStarSearch(&x, &bstar))
-        {
-          printf("Registro encontrado!");
-        }
-
-        else
-        {
-          printf("Registro não encontrado.");
-        }
+        printf("Registro encontrado!");
       }
+
+      else
+      {
+        printf("Registro não encontrado.");
+      }
+    }
 
     else
     {

@@ -9,6 +9,7 @@ bool BStarSearch(Data *x, PointerType *Pt) // mudar pra bool
   if ((*Pt)->Pt == Internal)
   {
     i = 1;
+
     while (i < Page->UU.U0.ni && x->key > Page->UU.U0.ri[i - 1])
       i++;
     if (x->key < Page->UU.U0.ri[i - 1])
@@ -33,80 +34,78 @@ void InitializeBStar(PointerType *root)
   (*root)->UU.U1.ne = 0;
 }
 
-bool CreateBStar(FILE *file, Input *input, PointerType *bstar)
-{
-  printf("[Criando árvore B*...]");
+bool CreateBStar(FILE *binaryFile, int length, PointerType *bStarTree, Quantifier *quantifier)
+{''
+  InitializeBStar(bStarTree);
 
-  // Inicia a Árvore B*
-  InitializeBStar(bstar);
+  // Read the base binary file and insert the datas into the B* Tree
 
-  // Lê o arquivo binário base e insere os Datas na Árvore B*
+  Data *page = (Data *)malloc(sizeof(Data));
+  int currentPage = 0, itemCount;
+  int totalPages = length / PAGE_ITEMS;
 
-  PageStar page;
-  int currentPage = 0, itemsQuantity;
-  int numeropages = input->quantity / PAGE_ITEMS;
-
-  while (currentPage < numeropages)
+  while (currentPage < totalPages)
   {
+    // If the page is not the last one, it is complete,
+    // so the number of items is equal to the maximum items per page
+    if (currentPage < totalPages)
+      itemCount = PAGE_ITEMS;
 
-    // Se a página não for a última, ela é completa,
-    // então, a quantidade de itens é igual ao máximo de itens por página
-    if (currentPage < numeropages)
-      itemsQuantity = PAGE_ITEMS;
-
-    // Se for a última, ela pode não estar completa,
-    // então, calcula a quantidade de itens
+    // If it is the last page, it may not be complete,
+    // so calculate the number of items
     else
     {
-      fseek(file, 0, SEEK_END);
-      itemsQuantity = (ftell(file) / sizeof(Data)) % PAGE_ITEMS;
-      fseek(file, (numeropages - 1) * PAGE_ITEMS * sizeof(Data), SEEK_SET);
+      fseek(binaryFile, 0, SEEK_END);
+      itemCount = (ftell(binaryFile) / sizeof(Data)) % PAGE_ITEMS;
+      fseek(binaryFile, (totalPages - 1) * PAGE_ITEMS * sizeof(Data), SEEK_SET);
     }
 
-    // Lê a página
-    fread(&page, sizeof(Data), itemsQuantity, file);
+    // Read the page
+    fread(&page, sizeof(Data), itemCount, binaryFile);
+    quantifier->reads += 1;
 
-    // Constrói a Árvore B*
-    for (int i = 0; i < itemsQuantity; i++)
+    // Build the B* Tree
+    for (int i = 0; i < itemCount; i++)
     {
-      insertIntoBStar(page[i], bstar);
+      insertIntoBStar(page[i], bStarTree, quantifier);
     }
 
     currentPage++;
   }
+
+  // Measure the time required to create the tree in main memory
+
   return true;
 }
-
-bool insertIntoBStar(Data data, PointerType *raiz)
+bool insertIntoBStar(Data data, PointerType *root, Quantifier *quantifier)
 {
-  bool hasGrown; // true informa que a Árvore B* hasGrown pela raiz
 
-  Data registerReturning;    // Datada nova raiz
-  PointerType returnPointer; // filho à direita do registerReturning
+  bool hasGrown;
 
-  // Insere o data
-  if (!recursiveInsertion(data, *raiz, &hasGrown, &registerReturning, &returnPointer))
-  {
-    return false; // se a inserção não for bem sucedida, retorna false
-  }
+  Data returnData;
+  PointerType returnPointer;
 
-  // Cria uma nova raiz quando a Árvore B* cresce pela raiz
+  // Insert the data
+  if (!recursiveInsertion(data, *root, &hasGrown, &returnData, &returnPointer, quantifier))
+    return false; // if the insertion is not successful, return false
+
+  // Create a new root when the B* Tree grows from the root
   if (hasGrown)
   {
-    // Aloca um apontador auxiliar que recebe as informações da nova raiz
+    // Allocate an auxiliary pointer that receives the information of the new root
     PointerType newRoot = (PointerType)malloc(sizeof(PageType));
     newRoot->Pt = Internal;
-    newRoot->UU.U0.ni = 1;                        // atualiza a quantidade de keys
-    newRoot->UU.U0.ri[0] = registerReturning.key; // o filho mais à esquerda recebe a key do Dataretornado pela inserção
-    newRoot->UU.U0.pi[1] = returnPointer;         // o apontador à direita recebe o filho à direita do data
-    newRoot->UU.U0.pi[0] = *raiz;                 // o apontador à esquerda recebe a sub-árvore
-    *raiz = newRoot;                              // a árvore é atualizada com o endereço da nova raiz
+    newRoot->UU.U0.ni = 1;                 // update the number of keys
+    newRoot->UU.U0.ri[0] = returnData.key; // the leftmost child receives the key from the returned data
+    newRoot->UU.U0.pi[1] = returnPointer;  // the right child receives the child to the right of the data
+    newRoot->UU.U0.pi[0] = *root;          // the left child receives the subtree
+    *root = newRoot;                       // the tree is updated with the address of the new root
   }
 
   return true;
 }
 
-bool recursiveInsertion(Data data, PointerType currentPage, bool *hasGrown, Data *registerReturning, PointerType *returnPointer)
+bool recursiveInsertion(Data data, PointerType currentPage, bool *hasGrown, Data *registerReturning, PointerType *returnPointer, Quantifier *quantifier)
 {
 
   int i = 1, j;
@@ -191,7 +190,7 @@ bool recursiveInsertion(Data data, PointerType currentPage, bool *hasGrown, Data
     if (data.key < currentPage->UU.U0.ri[i - 1])
       i--;
 
-    recursiveInsertion(data, currentPage->UU.U0.pi[i], hasGrown, registerReturning, returnPointer);
+    recursiveInsertion(data, currentPage->UU.U0.pi[i], hasGrown, registerReturning, returnPointer, quantifier);
 
     if (!*hasGrown)
       return true;

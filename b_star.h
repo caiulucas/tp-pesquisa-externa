@@ -32,8 +32,8 @@ typedef struct PageType
 
 bool BStarSearch(Data *x, PointerType *Pt);
 void InitializeBStar(PointerType *root);
-bool CreateBStar(FILE *file, Input *input, PointerType *bstar);
-bool insertIntoBStar(Data data, PointerType *raiz);
-bool recursiveInsertion(Data data, PointerType paginaAtual, bool *hasGrown, Data *registerReturning, PointerType *returnPointer);
+bool CreateBStar(FILE *binaryFile, int length, PointerType *bStarTree, Quantifier *quantifier);
+bool insertIntoBStar(Data data, PointerType *raiz, Quantifier *quantifier);
+bool recursiveInsertion(Data data, PointerType paginaAtual, bool *hasGrown, Data *registerReturning, PointerType *returnPointer, Quantifier *quantifier);
 bool insertIntoInternalPage(PointerType page, int key, PointerType rightPointer);
 bool insertIntoExternalPage(PointerType page, Data data);
