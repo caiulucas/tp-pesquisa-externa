@@ -16,10 +16,7 @@ bool indexSearch(FILE *file, Input input)
 
   int reads = 0;
 
-  createIndexesTable(indexes, file);
-
   Data item;
-  fflush(stdout);
   item.key = input.key;
 
   if (indexedSearch(&item, file, input.situation, &reads))
@@ -70,19 +67,17 @@ bool bTree(int key, FILE *file)
   return false;
 }
 
-bool binaryTree(int key, FILE *dataFile)
+bool binaryTree(Input input, FILE *dataFile)
 {
-  Node *root;
-  startBinaryTree(&root);
-
   int reads = 0;
 
-  createBinaryTree();
+  // printBinaryTree();
   Data item;
 
-  item.key = key;
+  item.key = input.key;
+  printBinaryTree();
 
-  if (searchBinaryTree(root, &item, dataFile, &reads))
+  if (searchBinaryTree(&item, dataFile, input.situation, &reads))
   {
     printf("[+] Item encontrado!\n");
     printf("[+] %d leituras realizadas.\n", reads);
@@ -119,13 +114,13 @@ int main(int argc, char *argv[])
   input.situation = atoi(argv[3]);
   input.key = atoi(argv[4]);
 
-  FILE *file = fopen(DATA_FILE, "rb");
-  if (!file)
+  if (argc > 5 && !strcmp(argv[5], "-s"))
   {
-    printf("[FAIL] Arquivo de dados não encontrado.\n");
-    generateBinaryFile(input.quantity, input.situation);
-    file = fopen(DATA_FILE, "rb");
+    setup(input);
+    return EXIT_SUCCESS;
   }
+
+  FILE *file = fopen(DATA_FILE, "rb");
 
   if (!file)
   {
@@ -140,7 +135,7 @@ int main(int argc, char *argv[])
     break;
 
   case BINARY_TREE:
-    binaryTree(input.key, file);
+    binaryTree(input, file);
     break;
 
   case B_TREE:
@@ -152,7 +147,7 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  if (argc > 5 && strcmp(argv[5], "-p\n"))
+  if (argc > 5 && !strcmp(argv[5], "-p"))
     printBinaryFile(file);
 
   fclose(file);
