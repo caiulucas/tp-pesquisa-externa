@@ -5,6 +5,7 @@
 #include "utils.h"
 
 bool indexedSearch(Data *item, FILE *file, Situation situation, Quantifier *quantifier)
+bool indexedSearch(Data *item, FILE *file, Situation situation, Quantifier *quantifier)
 {
   FILE *indexesFile = fopen(INDEXES_FILE, "rb");
 
@@ -24,8 +25,6 @@ bool indexedSearch(Data *item, FILE *file, Situation situation, Quantifier *quan
 <<<<<<< HEAD
   fread(&index, sizeof(Index), 1, indexesFile);
   quantifier->reads += 1;
-=======
->>>>>>> d187e0d (feat: new branch)
 
   int i;
   for (i = 0; i < size; i++)

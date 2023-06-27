@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include "consts.h"
 
+int createIndexesTable(Index *indexes, FILE *dataFile);
 bool indexedSearch(Data *item, FILE *file, Situation situation, int *reads);
 int readIndexesTable(Index *indexes, int *reads);
 int createIndexesTable(Index *indexes, FILE *dataFile);
