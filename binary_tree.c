@@ -36,6 +36,10 @@ bool insertBinaryTree(Data data, FILE *binaryTreeFile)
 
   Node aux;
 
+  fseek(binaryTreeFile, 0, SEEK_END);
+  size_t length = ftell(binaryTreeFile) / sizeof(Node);
+  rewind(binaryTreeFile);
+
   while (fread(&aux, sizeof(Node), 1, binaryTreeFile) == 1)
   {
     if (aux.data.key > newNode.data.key)
