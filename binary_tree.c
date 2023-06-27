@@ -9,9 +9,6 @@ void startBinaryTree(Node **root)
   *root = NULL;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 // Node createNode(Index index, size_t pos, Node previousNode)
 // {
 //   Node aux;
@@ -22,48 +19,15 @@ void startBinaryTree(Node **root)
 //   return aux;
 // }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 61ed415 (update binary tree)
 Node *createNode(Data data, size_t pos)
-=======
-bool insertBinaryTree(Data data, FILE *binaryTreeFile)
->>>>>>> 012ec88 (feat: another type of tree)
 {
-  Node *node = (Node *)malloc(sizeof(Node));
-  node->key = data.key;
-  node->pos = pos;
-  node->leftNode = -1;
-  node->rightNode = -1;
-  return node;
-}
+  fseek(binaryTreeFile, 0, SEEK_END);
+  size_t pos = ftell(binaryTreeFile) / sizeof(Node);
 
-<<<<<<< HEAD
   Node newNode;
   newNode.data = data;
   newNode.leftNode = -1;
   newNode.rightNode = -1;
-=======
-=======
->>>>>>> 583cf9f (feat: implement binary tree)
-=======
->>>>>>> d9a0c2e (update binary tree)
-Node *createNode(Data data, size_t pos)
-{
-  Node *node = (Node *)malloc(sizeof(Node));
-  node->key = data.key;
-  node->pos = pos;
-  node->leftNode = -1;
-  node->rightNode = -1;
-  return node;
-}
-
-bool insertBinaryTree(Data data, FILE *binaryTreeFile)
-{
-<<<<<<< HEAD
-  FILE *binaryTreeFile = fopen(BINARY_TREE_FILE, "wb");
->>>>>>> bc6c119 (better binary_tree)
 
   if (pos == 0)
   {
@@ -72,35 +36,6 @@ bool insertBinaryTree(Data data, FILE *binaryTreeFile)
   }
 
   Node aux;
-<<<<<<< HEAD
-
-  fseek(binaryTreeFile, 0, SEEK_END);
-  size_t length = ftell(binaryTreeFile) / sizeof(Node);
-  rewind(binaryTreeFile);
-
-  if (length == 0)
-  {
-    Node *newNode = createNode(data, length);
-    fwrite(newNode, sizeof(Node), 1, binaryTreeFile);
-    rewind(binaryTreeFile);
-    return true;
-  }
-=======
->>>>>>> 012ec88 (feat: another type of tree)
-=======
-  if (!binaryTreeFile)
-    return false;
-
-  Node aux = {data.key, -1, -1, 0};
->>>>>>> 583cf9f (feat: implement binary tree)
-=======
-bool insertBinaryTree(Data data, FILE *binaryTreeFile)
-{
-  if (!binaryTreeFile)
-    return false;
-
-  Node aux = {data.key, -1, -1, 0};
->>>>>>> 61ed415 (update binary tree)
 
   fseek(binaryTreeFile, 0, SEEK_END);
   size_t length = ftell(binaryTreeFile) / sizeof(Node);
@@ -116,9 +51,7 @@ bool insertBinaryTree(Data data, FILE *binaryTreeFile)
 
   while (fread(&aux, sizeof(Node), 1, binaryTreeFile) == 1)
   {
-<<<<<<< HEAD
     if (aux.data.key > newNode.data.key)
-<<<<<<< HEAD
     {
       if (aux.leftNode != -1)
       {
@@ -126,79 +59,11 @@ bool insertBinaryTree(Data data, FILE *binaryTreeFile)
         continue;
       }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
       aux.leftNode = pos;
       fseek(binaryTreeFile, -sizeof(Node), SEEK_CUR);
-=======
-    if (index.key < aux->index.key)
-=======
-    if (data.key <= aux->key)
->>>>>>> bc6c119 (better binary_tree)
-=======
-    if (data.key < aux.key)
->>>>>>> 583cf9f (feat: implement binary tree)
-    {
-      if (aux.leftNode == -1)
-      {
-        aux.leftNode = length;
-        fseek(binaryTreeFile, -sizeof(Node), SEEK_CUR);
-        fwrite(&aux, sizeof(Node), 1, binaryTreeFile);
-        break;
-      }
-      displacement = (size_t)(aux.leftNode) * sizeof(Node);
-    }
-    else if (data.key > aux.key)
-    {
-      if (aux.rightNode == -1)
-      {
-        aux.rightNode = length;
-        fseek(binaryTreeFile, -sizeof(Node), SEEK_CUR);
-        fwrite(&aux, sizeof(Node), 1, binaryTreeFile);
-        break;
-      }
-<<<<<<< HEAD
-      displacement = (size_t)(aux->rightNode) * PAGE_ITEMS * sizeof(Data);
->>>>>>> c1b13e5 (feat: add pos to node)
-=======
-=======
-    size_t displacement;
-
-    if (data.key < aux.key)
->>>>>>> 61ed415 (update binary tree)
-    {
-      if (aux.leftNode == -1)
-      {
-        aux.leftNode = length;
-        fseek(binaryTreeFile, -sizeof(Node), SEEK_CUR);
-        fwrite(&aux, sizeof(Node), 1, binaryTreeFile);
-        break;
-      }
-      displacement = (size_t)(aux.leftNode) * sizeof(Node);
-    }
-    else if (data.key > aux.key)
-    {
-      if (aux.rightNode == -1)
-      {
-        aux.rightNode = length;
-        fseek(binaryTreeFile, -sizeof(Node), SEEK_CUR);
-        fwrite(&aux, sizeof(Node), 1, binaryTreeFile);
-        break;
-      }
-
-<<<<<<< HEAD
-      aux.leftNode = pos;
-      fseek(binaryTreeFile, -sizeof(Node), SEEK_CUR);
->>>>>>> 012ec88 (feat: another type of tree)
-=======
-
-      displacement = (size_t)(aux.rightNode) * sizeof(Node);
->>>>>>> 583cf9f (feat: implement binary tree)
     }
     else
     {
-<<<<<<< HEAD
       if (aux.rightNode != -1)
       {
         fseek(binaryTreeFile, (aux.leftNode) * sizeof(Node), SEEK_SET);
@@ -207,110 +72,19 @@ bool insertBinaryTree(Data data, FILE *binaryTreeFile)
 
       aux.rightNode = pos;
       fseek(binaryTreeFile, -sizeof(Node), SEEK_CUR);
-=======
-      displacement = (size_t)(aux.rightNode) * sizeof(Node);
-    }
-    else
-    {
-      rewind(binaryTreeFile);
-      return false;
->>>>>>> 61ed415 (update binary tree)
     }
 
-    fseek(binaryTreeFile, displacement, SEEK_SET);
+    fwrite(&aux, sizeof(Node), 1, binaryTreeFile);
+    fseek(binaryTreeFile, 0, SEEK_END);
+    fwrite(&newNode, sizeof(Node), 1, binaryTreeFile);
+    rewind(binaryTreeFile);
+    return true;
   }
 
-  Node *newNode = createNode(data, length);
-
-  fseek(binaryTreeFile, 0, SEEK_END);
-  fwrite(newNode, sizeof(Node), 1, binaryTreeFile);
   rewind(binaryTreeFile);
-
-  return true;
-}
-
-bool findBinaryTree(Data *data, FILE *dataFile, Quantifier *quantifier)
-{
-  FILE *binaryTreeFile = fopen(BINARY_TREE_FILE, "rb");
-
-  if (!binaryTreeFile)
-    return false;
-
-  Node aux;
-  while (fread(&aux, sizeof(Node), 1, binaryTreeFile) == 1)
-  {
-    if (data->key == aux.key)
-    {
-      fseek(dataFile, aux.pos * sizeof(Data), SEEK_SET);
-      fread(data, sizeof(Data), 1, dataFile);
-      quantifier->reads += 1;
-      quantifier->comparisons += 1;
-
-      rewind(dataFile);
-      fclose(binaryTreeFile);
-      return true;
-    }
-
-    size_t displacement;
-
-    quantifier->comparisons += 1;
-    if (data->key > aux.key)
-      displacement = (size_t)(aux.rightNode) * sizeof(Node);
-    else
-      displacement = (size_t)(aux.leftNode) * sizeof(Node);
-
-    fseek(binaryTreeFile, displacement, SEEK_SET);
-    quantifier->reads += 1;
-    }
-
-  rewind(dataFile);
-  fclose(binaryTreeFile);
   return false;
-<<<<<<< HEAD
-=======
-=======
-      rewind(binaryTreeFile);
-      return false;
-    }
-
-    fseek(binaryTreeFile, displacement, SEEK_SET);
-  }
-
-  Node *newNode = createNode(data, length);
-
-  fseek(binaryTreeFile, 0, SEEK_END);
-  fwrite(newNode, sizeof(Node), 1, binaryTreeFile);
-  rewind(binaryTreeFile);
-
-  return true;
-<<<<<<< HEAD
->>>>>>> bc6c119 (better binary_tree)
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-void createBinaryTree(FILE *dataFile)
-{
-  Data data;
-  FILE *binaryTreeFile = fopen(BINARY_TREE_FILE, "wb+");
-
-  if (!binaryTreeFile)
-    return;
-
-  rewind(dataFile);
-  int i = 1;
-  while (fread(&data, sizeof(Data), 1, dataFile) == 1)
-  {
-    clear();
-    printf("[INFO] Gerando %d arquivos.\n", i++);
-    insertBinaryTree(data, binaryTreeFile);
-  }
-
-  fclose(dataFile);
-}
-
->>>>>>> 61ed415 (update binary tree)
 void printBinaryTree()
 {
   FILE *binaryTreeFile = fopen(BINARY_TREE_FILE, "rb");
@@ -321,41 +95,6 @@ void printBinaryTree()
   Node aux;
 
   while (fread(&aux, sizeof(Node), 1, binaryTreeFile) == 1)
-  {
-    printf("Key: %d ", aux.key);
-    printf("Left: %d ", aux.leftNode);
-    printf("Right: %d ", aux.rightNode);
-    printf("Pos: %d ", aux.pos);
-    printf("\n");
-  }
-<<<<<<< HEAD
->>>>>>> 012ec88 (feat: another type of tree)
-}
-
-void printBinaryTree()
-=======
-}
-
-<<<<<<< HEAD
-int binarySearch(Data data[PAGE_ITEMS], int key)
->>>>>>> 583cf9f (feat: implement binary tree)
-{
-  FILE *binaryTreeFile = fopen(BINARY_TREE_FILE, "rb");
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-  if (!binaryTreeFile)
-    return;
-
-  Node aux;
-
-  while (fread(&aux, sizeof(Node), 1, binaryTreeFile) == 1)
-=======
-  while (left <= right) 
->>>>>>> 012ec88 (feat: another type of tree)
-=======
-  while (left <= right)
->>>>>>> 583cf9f (feat: implement binary tree)
   {
     printf("key: %d\n", aux.data.key);
     printf("leftNode: %d\n", aux.leftNode);
@@ -364,28 +103,13 @@ int binarySearch(Data data[PAGE_ITEMS], int key)
   }
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 bool findBinaryTree(Data *data, FILE *dataFile, Quantifier *quantifier)
-=======
-bool findBinaryTree(int key, Data *data, int *reads)
->>>>>>> 012ec88 (feat: another type of tree)
-=======
-=======
->>>>>>> 54ee3d0 (add reads)
-bool findBinaryTree(Data *data, FILE *dataFile, int *reads)
->>>>>>> 583cf9f (feat: implement binary tree)
-=======
-bool findBinaryTree(Data *data, FILE *dataFile, Quantifier *quantifier)
->>>>>>> 829a1d7 (feat: add comparisons)
 {
   FILE *binaryTreeFile = fopen(BINARY_TREE_FILE, "rb");
 
   if (!binaryTreeFile)
     return false;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
   Node aux;
   while (fread(&aux, sizeof(Node), 1, binaryTreeFile) == 1)
   {
@@ -403,85 +127,20 @@ bool findBinaryTree(Data *data, FILE *dataFile, Quantifier *quantifier)
       displacement = (size_t)(aux.leftNode) * PAGE_ITEMS * sizeof(Data);
 
     fseek(binaryTreeFile, displacement, SEEK_SET);
-<<<<<<< HEAD
     quantifier->reads += 1;
     
-=======
->>>>>>> 012ec88 (feat: another type of tree)
   }
-=======
-  // Node *aux = root;
-  // while (aux)
-  // {
-  //   if (key == aux->key)
-  //   {
-  //     *index = aux->index;
-  //     return true;
-  //   }
-=======
-  Node aux;
-  while (fread(&aux, sizeof(Node), 1, binaryTreeFile) == 1)
-  {
-    if (data->key == aux.key)
-    {
-      fseek(dataFile, aux.pos * sizeof(Data), SEEK_SET);
-      fread(data, sizeof(Data), 1, dataFile);
-      quantifier->reads += 1;
-      quantifier->comparisons += 1;
-
-      rewind(dataFile);
-      fclose(binaryTreeFile);
-      return true;
-    }
->>>>>>> 583cf9f (feat: implement binary tree)
-
-    size_t displacement;
-
-    quantifier->comparisons += 1;
-    if (data->key > aux.key)
-      displacement = (size_t)(aux.rightNode) * sizeof(Node);
-    else
-      displacement = (size_t)(aux.leftNode) * sizeof(Node);
-
-<<<<<<< HEAD
-  //   fseek(binaryTreeFile, displacement, SEEK_SET);
-  //   fread(&aux, sizeof(Node), 1, binaryTreeFile);
-  // }
->>>>>>> bc6c119 (better binary_tree)
-=======
-    fseek(binaryTreeFile, displacement, SEEK_SET);
-    quantifier->reads += 1;
-<<<<<<< HEAD
-    
-  }
->>>>>>> 583cf9f (feat: implement binary tree)
-=======
-    }
->>>>>>> d9a0c2e (update binary tree)
 
   rewind(dataFile);
   fclose(binaryTreeFile);
   return false;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 void createBinaryTree(FILE *dataFile)
 {
   Data data;
   FILE *binaryTreeFile = fopen(BINARY_TREE_FILE, "wb+");
 
-=======
-bool searchBinaryTree(Data *item, FILE *dataFile, Situation situation, int *reads)
-=======
-void createBinaryTree(FILE *dataFile)
->>>>>>> 583cf9f (feat: implement binary tree)
-{
-  Data data;
-  FILE *binaryTreeFile = fopen(BINARY_TREE_FILE, "wb+");
-
-<<<<<<< HEAD
->>>>>>> 012ec88 (feat: another type of tree)
   if (!findBinaryTree(indexKey, &data, reads))
     return false;
 
@@ -505,9 +164,6 @@ void createBinaryTree(FILE *dataFile)
 
 void createBinaryTree()
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   FILE *dataFile = fopen(DATA_FILE, "rb");
 
   if (!dataFile)
@@ -524,9 +180,6 @@ void createBinaryTree()
     insertBinaryTree(data, binaryTreeFile);
 
   fclose(dataFile);
-=======
-
->>>>>>> 61ed415 (update binary tree)
   fclose(binaryTreeFile);
 }
 
@@ -553,106 +206,4 @@ bool runBinaryTree(Input input, FILE *dataFile)
   printf("[INFO] %d comparações realizadas.\n", quantifier.comparisons);
   printf("[FAIL] Item não encontrado!\n");
   return false;
-=======
-  FILE *indexesFile = fopen(INDEXES_FILE, "rb");
-=======
-  FILE *dataFile = fopen(DATA_FILE, "rb");
->>>>>>> 012ec88 (feat: another type of tree)
-
-  if (!dataFile)
-    return;
-
-<<<<<<< HEAD
-  while (fread(&index, sizeof(Index), 1, indexesFile) == 1)
-    insertBinaryTree(index);
->>>>>>> d187e0d (feat: new branch)
-=======
-  FILE *binaryTreeFile = fopen(BINARY_TREE_FILE, "wb+");
-=======
-  FILE *dataFile = fopen(DATA_FILE, "rb");
-
-  Data data;
-=======
-  if (!binaryTreeFile)
-    return;
->>>>>>> 583cf9f (feat: implement binary tree)
-
-  rewind(dataFile);
-  int i = 1;
-  while (fread(&data, sizeof(Data), 1, dataFile) == 1)
-  {
-    clear();
-    printf("[INFO] Gerando %d arquivos.\n", i++);
-    insertBinaryTree(data, binaryTreeFile);
-  }
-
-  fclose(dataFile);
-}
-
-void printBinaryTree()
-{
-  FILE *binaryTreeFile = fopen(BINARY_TREE_FILE, "rb");
->>>>>>> bc6c119 (better binary_tree)
-
-  if (!binaryTreeFile)
-    return;
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-  Data data;
-
-  while (fread(&data, sizeof(Index), 1, dataFile) == 1)
-    insertBinaryTree(data, binaryTreeFile);
-
-  fclose(dataFile);
-  fclose(binaryTreeFile);
->>>>>>> 012ec88 (feat: another type of tree)
-=======
-  Node *aux;
-=======
-  Node aux;
->>>>>>> 583cf9f (feat: implement binary tree)
-
-  while (fread(&aux, sizeof(Node), 1, binaryTreeFile) == 1)
-  {
-    printf("Key: %d ", aux.key);
-    printf("Left: %d ", aux.leftNode);
-    printf("Right: %d ", aux.rightNode);
-    printf("Pos: %d ", aux.pos);
-    printf("\n");
-  }
-<<<<<<< HEAD
->>>>>>> bc6c119 (better binary_tree)
-=======
-
-  fclose(binaryTreeFile);
-<<<<<<< HEAD
->>>>>>> 583cf9f (feat: implement binary tree)
-=======
-}
-
-bool runBinaryTree(Input input, FILE *dataFile)
-{
-  Quantifier quantifier;
-  quantifier.reads = 0;
-  quantifier.comparisons = 0;
-
-  Data item;
-
-  item.key = input.key;
-
-  if (findBinaryTree(&item, dataFile, &quantifier))
-  {
-    printf("[SUCCESS] Item encontrado!\n");
-    printf("[INFO] %d leituras realizadas.\n", quantifier.reads);
-    printf("[INFO] %d comparações realizadas.\n", quantifier.comparisons);
-    printData(item);
-    return true;
-  }
-
-  printf("[INFO] %d leituras realizadas.\n", quantifier.reads);
-  printf("[INFO] %d comparações realizadas.\n", quantifier.comparisons);
-  printf("[FAIL] Item não encontrado!\n");
-  return false;
->>>>>>> 54ee3d0 (add reads)
 }
