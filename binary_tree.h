@@ -1,10 +1,11 @@
 #pragma once
 #include <stdbool.h>
+#include <stdlib.h>
 #include "consts.h"
 
 typedef struct Node
-{ 
-  Data data;
+{
+  int key;
   int leftNode;
   int rightNode;
   int pos;
@@ -12,5 +13,6 @@ typedef struct Node
 
 void startBinaryTree(Node **root);
 void printBinaryTree();
-void createBinaryTree();
-bool searchBinaryTree(Data *item, FILE *dataFile, Situation situation, int *reads);
+void createBinaryTree(FILE *file);
+bool findBinaryTree(Data *data, FILE *dataFile, Quantifier *quantifier);
+bool runBinaryTree(Input input, FILE *dataFile);
