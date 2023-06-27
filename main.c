@@ -9,30 +9,6 @@
 #include "binary_tree.h"
 #include "utils.h"
 
-bool indexSearch(FILE *file, Input input)
-{
-  size_t indexesSz = (sizeof(Index) * input.quantity) / PAGE_ITEMS;
-  Index *indexes = malloc(indexesSz);
-
-  int reads = 0;
-
-  Data item;
-  item.key = input.key;
-
-  if (indexedSearch(&item, file, input.situation, &reads))
-  {
-    printf("[INFO] Item encontrado.\n");
-    printf("[INFO] %d leituras realizadas.\n", reads);
-    printData(item);
-    return true;
-  }
-
-  printf("[INFO] %d leituras realizadas.\n", reads);
-  printf("Item não encontrado\n");
-  free(indexes);
-  return false;
-}
-
 bool bTree(int key, FILE *file)
 {
   // Lê a página do arquivo
@@ -105,6 +81,7 @@ int main(int argc, char *argv[])
      4 - chave
      5 - [-p] opcional para printar todo o arquivo
   */
+
   clock_t startClock = clock();
   if (argc < 5)
   {
@@ -135,7 +112,7 @@ int main(int argc, char *argv[])
   switch (input.method)
   {
   case INDEX:
-    indexSearch(file, input);
+    runIndexedSearch(file, input);
     break;
 
   case BINARY_TREE:

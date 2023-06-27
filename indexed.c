@@ -22,10 +22,15 @@ bool indexedSearch(Data *item, FILE *file, Situation situation, Quantifier *quan
 
   Index index;
 <<<<<<< HEAD
+<<<<<<< HEAD
   fread(&index, sizeof(Index), 1, indexesFile);
   quantifier->reads += 1;
 =======
 >>>>>>> d187e0d (feat: new branch)
+=======
+  fread(&index, sizeof(Index), 1, indexesFile);
+  quantifier->reads += 1;
+>>>>>>> 6f34334 (fix indexed)
 
   int i;
   for (i = 0; i < size; i++)
