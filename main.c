@@ -68,6 +68,7 @@ bool bTree(int key, FILE *file)
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 bool binaryTree(Input input, FILE *dataFile)
 {
@@ -91,6 +92,8 @@ bool binaryTree(Input input, FILE *dataFile)
 }
 
 >>>>>>> 012ec88 (feat: another type of tree)
+=======
+>>>>>>> 54ee3d0 (add reads)
 int main(int argc, char *argv[])
 {
   //  pesquisa <método> <quantidade> <situação> <chave> [-P]
@@ -137,10 +140,14 @@ int main(int argc, char *argv[])
 
   case BINARY_TREE:
 <<<<<<< HEAD
+<<<<<<< HEAD
     runBinaryTree(input, file);
 =======
     binaryTree(input, file);
 >>>>>>> 012ec88 (feat: another type of tree)
+=======
+    runBinaryTree(input, file);
+>>>>>>> 54ee3d0 (add reads)
     break;
 
   case B_TREE:
