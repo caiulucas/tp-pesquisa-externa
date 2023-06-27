@@ -4,19 +4,14 @@
 #include "consts.h"
 
 typedef struct Node
-{ 
-  Data data;
 {
   int key;
   int leftNode;
   int rightNode;
+  int pos;
 } Node;
-
-typedef Node *BinaryTree;
 
 void startBinaryTree(Node **root);
 void printBinaryTree();
-bool insertBinaryTree(Data data);
-void printBinaryTree(FILE *file);
-void createBinaryTree();
-bool searchBinaryTree(Data *item, FILE *dataFile, Situation situation, int *reads);
+void createBinaryTree(FILE *file);
+bool findBinaryTree(Data *data, FILE *dataFile, int *reads);

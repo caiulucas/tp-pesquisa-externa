@@ -18,19 +18,19 @@ void printData(Data data)
 
 void setup(Input input)
 {
+  remove(DATA_FILE);
+  remove(INDEXES_FILE);
+  remove(B_TREE_FILE);
+
+  generateBinaryFile(input.quantity, input.situation);
+
   FILE *file = fopen(DATA_FILE, "rb");
-  if (!file)
-  {
-    printf("[FAIL] Arquivo de dados não encontrado.\n");
-    generateBinaryFile(input.quantity, input.situation);
-  }
 
   size_t indexesSz = (sizeof(Index) * input.quantity) / PAGE_ITEMS;
   Index *indexes = malloc(indexesSz);
 
   createIndexesTable(indexes, file);
-  createBinaryTree();
 
-  fclose(file);
+  createBinaryTree(file);
   free(indexes);
 }
