@@ -47,9 +47,14 @@ bool searchBinaryTree(Data *item, FILE *dataFile, Situation situation, int *read
 >>>>>>> 012ec88 (feat: another type of tree)
 =======
 void createBinaryTree(FILE *file);
+<<<<<<< HEAD
 bool findBinaryTree(Data *data, FILE *dataFile, int *reads);
 >>>>>>> 583cf9f (feat: implement binary tree)
 =======
 bool findBinaryTree(Data *data, FILE *dataFile, int *reads);
 bool runBinaryTree(Input input, FILE *dataFile);
 >>>>>>> 54ee3d0 (add reads)
+=======
+bool findBinaryTree(Data *data, FILE *dataFile, Quantifier *quantifier);
+bool runBinaryTree(Input input, FILE *dataFile);
+>>>>>>> 829a1d7 (feat: add comparisons)

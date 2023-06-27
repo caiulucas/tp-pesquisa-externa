@@ -199,6 +199,7 @@ bool insertBinaryTree(Data data, FILE *binaryTreeFile)
 >>>>>>> bc6c119 (better binary_tree)
 }
 
+<<<<<<< HEAD
 void printBinaryTree()
 {
   FILE *binaryTreeFile = fopen(BINARY_TREE_FILE, "rb");
@@ -261,6 +262,9 @@ bool findBinaryTree(int key, Data *data, int *reads)
 >>>>>>> 54ee3d0 (add reads)
 bool findBinaryTree(Data *data, FILE *dataFile, int *reads)
 >>>>>>> 583cf9f (feat: implement binary tree)
+=======
+bool findBinaryTree(Data *data, FILE *dataFile, Quantifier *quantifier)
+>>>>>>> 829a1d7 (feat: add comparisons)
 {
   FILE *binaryTreeFile = fopen(BINARY_TREE_FILE, "rb");
 
@@ -309,7 +313,8 @@ bool findBinaryTree(Data *data, FILE *dataFile, int *reads)
     {
       fseek(dataFile, aux.pos * sizeof(Data), SEEK_SET);
       fread(data, sizeof(Data), 1, dataFile);
-      *reads += 1;
+      quantifier->reads += 1;
+      quantifier->comparisons += 1;
 
       rewind(dataFile);
       fclose(binaryTreeFile);
@@ -318,6 +323,8 @@ bool findBinaryTree(Data *data, FILE *dataFile, int *reads)
 >>>>>>> 583cf9f (feat: implement binary tree)
 
     size_t displacement;
+
+    quantifier->comparisons += 1;
     if (data->key > aux.key)
       displacement = (size_t)(aux.rightNode) * sizeof(Node);
     else
@@ -330,7 +337,8 @@ bool findBinaryTree(Data *data, FILE *dataFile, int *reads)
 >>>>>>> bc6c119 (better binary_tree)
 =======
     fseek(binaryTreeFile, displacement, SEEK_SET);
-    *reads += 1;
+    quantifier->reads += 1;
+    
   }
 >>>>>>> 583cf9f (feat: implement binary tree)
 
@@ -505,22 +513,26 @@ void printBinaryTree()
 
 bool runBinaryTree(Input input, FILE *dataFile)
 {
-  int reads = 0;
+  Quantifier quantifier;
+  quantifier.reads = 0;
+  quantifier.comparisons = 0;
 
   Data item;
 
   item.key = input.key;
 
-  if (findBinaryTree(&item, dataFile, &reads))
+  if (findBinaryTree(&item, dataFile, &quantifier))
   {
-    printf("[+] Item encontrado!\n");
-    printf("[+] %d leituras realizadas.\n", reads);
+    printf("[SUCCESS] Item encontrado!\n");
+    printf("[INFO] %d leituras realizadas.\n", quantifier.reads);
+    printf("[INFO] %d comparações realizadas.\n", quantifier.comparisons);
     printData(item);
     return true;
   }
 
-  printf("[+] %d leituras realizadas.\n", reads);
-  printf("[+] Item não encontrado!\n");
+  printf("[INFO] %d leituras realizadas.\n", quantifier.reads);
+  printf("[INFO] %d comparações realizadas.\n", quantifier.comparisons);
+  printf("[FAIL] Item não encontrado!\n");
   return false;
 >>>>>>> 54ee3d0 (add reads)
 }
