@@ -2,7 +2,7 @@
 #define DATA2_SIZE 1000
 #define DATA3_SIZE 5000
 #define PAGE_ITEMS 1000
-#define M 10
+#define M 5
 #define MM 2 * M
 #define DATA_FILE "data/data.bin"
 #define INDEXES_FILE "data/indexes.bin"

@@ -9,40 +9,6 @@
 #include "binary_tree.h"
 #include "utils.h"
 
-bool bTree(int key, FILE *file)
-{
-  // Lê a página do arquivo
-  Page *tree = malloc(sizeof(Page) * 1000000);
-  FILE *bTreeFile = fopen(B_TREE_FILE, "wb");
-
-  if (!bTreeFile)
-    return false;
-
-  Data item;
-  item.key = key;
-
-  rewind(file);
-
-  int pos = 1;
-  while (fread(&item, sizeof(Data), 1, file) == 1)
-  {
-    insertBTree(item, &tree, file, bTreeFile, pos++);
-  }
-
-  item.key = key;
-
-  // printBTree(tree);
-  if (searchBTree(&item, tree, file, bTreeFile))
-  {
-    printf("[+] Chave encontrada!\n");
-    printData(item);
-    return true;
-  }
-
-  printf("Chave não encontrada!\n");
-  return false;
-}
-
 int main(int argc, char *argv[])
 {
   //  pesquisa <método> <quantidade> <situação> <chave> [-P]
@@ -89,7 +55,7 @@ int main(int argc, char *argv[])
     runBinaryTree(input, file);
     break;
   case B_TREE:
-    bTree(input.key, file);
+    runBTree(input.key, file);
     break;
   }
 
